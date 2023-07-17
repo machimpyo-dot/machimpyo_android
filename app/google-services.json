@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "249529867965",
+    "project_id": "dot-letter",
+    "storage_bucket": "dot-letter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249529867965:android:169184db02d6d0c5de61d4",
+        "android_client_info": {
+          "package_name": "com.machimpyo.dot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "249529867965-93hph7lih6nofit52h8k8ljbeun4ekeh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.machimpyo.dot",
+            "certificate_hash": "5c79a5242437b39bdd10e9684e2aa7d03a165e67"
+          }
+        },
+        {
+          "client_id": "249529867965-d8rtt31as3e1l0lchr450q42lt9lecct.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8ck2iNEHhzutCAEzzlRHYkrTF2B2Gd7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249529867965-d8rtt31as3e1l0lchr450q42lt9lecct.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

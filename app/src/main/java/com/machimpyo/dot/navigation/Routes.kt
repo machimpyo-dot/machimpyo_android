@@ -11,4 +11,4 @@ const val ROUTE_SEND_LETTER="send_letter" //쓴 편지 확인하고 보내는 �
 const val ROUTE_STORAGE_INTERSECTION="storage_intersection"//편지 보관함 분기점
 const val ROUTE_CHECK_LETTER="check_letter" //받은 편지 확인하는 화면
 const val ROUTE_STORAGE="storage"//편지 보관함 화면
-const val ROUTE_STORAGE_DETAIL="storeage_detail" //편지함 세부 목록 화면
+const val ROUTE_STORAGE_DETAIL="storage_detail" //편지함 세부 목록 화면

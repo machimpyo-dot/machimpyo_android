@@ -34,16 +34,7 @@ fun AppNavHost(
         composable(
             route = ROUTE_SPLASH
         ) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize()
-            ) { innerPadding->
-                Box(
-                    modifier = Modifier.padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("스플래쉬 화면")
-                }
-            }
+            
         }
 
         /*

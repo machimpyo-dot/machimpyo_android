@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -132,4 +133,7 @@ dependencies {
 
     //Compose-Navigation
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
+
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
 }
