@@ -139,4 +139,11 @@ dependencies {
 
     // Add the dependency for the Firebase SDK for Google Analytics
     implementation("com.google.firebase:firebase-analytics-ktx")
+
+    //Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.0'
+
+    //Firebase Dynamic Links
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:21.1.0'
+
 }
