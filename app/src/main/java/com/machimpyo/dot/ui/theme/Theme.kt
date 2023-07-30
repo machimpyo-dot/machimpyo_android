@@ -60,7 +60,6 @@ fun MachimpyoTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
         content = content
     )
 }

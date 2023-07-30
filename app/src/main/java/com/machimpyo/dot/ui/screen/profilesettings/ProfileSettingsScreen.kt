@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.screen
 
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -71,9 +72,11 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
 import kotlinx.coroutines.NonDisposableHandle
 import kotlinx.coroutines.NonDisposableHandle.parent
+import kotlinx.coroutines.flow.collectLatest
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,7 +125,7 @@ private fun Preview() {
                 contentAlignment = Alignment.Center
 
             ) {
-                if (rotateState.value in -90f .. 0f) {
+                if (rotateState.value in -90f..0f) {
                     Text("이곳에 겉표지", color = Color.Black)
                 }
             }
@@ -160,59 +163,67 @@ fun ProfileSettingsScreen(
     val pagerState = rememberPagerState()
 
     val spacing = LocalSpacing.current
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
+    val dotTypo = LocalDotTypo.current
 
-    ) {
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect {
+            when(it) {
+                is ProfileSettingsViewModel.Effect.NavigateTo -> {
+                    navController.navigate(it.route, it.builder)
+                }
+                is ProfileSettingsViewModel.Effect.ShowMessage -> {
 
-        val indicatorRef = createRef()
-
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize(),
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            "회원가입", style = MaterialTheme.typography.titleMedium
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.ChevronLeft, contentDescription = null)
-                        }
-                    },
-                    actions = {
-                        HorizontalPagerIndicator(
-                            pagerState = pagerState,
-                            modifier = Modifier.wrapContentHeight()
-//                            .constrainAs(indicatorRef) {
-//                                top.linkTo(parent.top, margin = spacing.small)
-//                                end.linkTo(parent.end, margin = spacing.small)
-//                            }
-                            ,
-                            activeColor = MaterialTheme.colorScheme.primary,
-                            inactiveColor = Color.LightGray
-                        )
-                    }
-                )
+                }
             }
-        ) { innerPadding ->
+        }
+    }
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "회원가입", style = dotTypo.DotAppBarTitle_Body_Small_Bold.copy(
+                            color = Color.Black
+                        )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        viewModel.backButtonClicked(navController)
+                    }) {
+                        Icon(imageVector = Icons.Default.ChevronLeft, contentDescription = null)
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+
+
+        ConstraintLayout(
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+        ) {
+            val (contentRef, indiRef) = createRefs()
+
 
 
             ProfileSettingsContent(
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
+                    .constrainAs(contentRef) {
+
+                    },
                 pagerState = pagerState
             )
-
-
         }
 
 
+
+
     }
+
+
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
