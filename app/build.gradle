@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -85,9 +86,9 @@ dependencies {
 
 
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.42")
+    implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.hilt:hilt-common:1.0.0")
-    kapt("com.google.dagger:hilt-compiler:2.42")
+    kapt("com.google.dagger:hilt-compiler:2.44")
     implementation "androidx.hilt:hilt-work:1.0.0"
     kapt "androidx.hilt:hilt-compiler:1.0.0"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
@@ -132,4 +133,22 @@ dependencies {
 
     //Compose-Navigation
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
+
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
+
+    // Add the dependency for the Firebase SDK for Google Analytics
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    //Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.0'
+
+    //Firebase Dynamic Links
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:21.1.0'
+
+    //Sphere Text View
+    implementation 'io.github.oleksandrbalan:tagcloud:1.0.0'
+
+    //ConstraintLayout
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }
