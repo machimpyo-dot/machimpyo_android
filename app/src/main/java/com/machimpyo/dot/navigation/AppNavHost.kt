@@ -46,23 +46,26 @@ fun NavGraphBuilder.AnimatingComposable(
         )
     }
 
-    val _exitTransition = exitTransition ?: {
+    val _exitTransition = exitTransition
+        ?: {
         slideOutOfContainer(
-            AnimatedContentScope.SlideDirection.Right,
+            AnimatedContentScope.SlideDirection.Left,
             animationSpec = tween(700)
         )
     }
 
-    val _popEnterTransition = popEnterTransition ?: {
+    val _popEnterTransition = popEnterTransition
+        ?: {
         slideIntoContainer(
             AnimatedContentScope.SlideDirection.Left,
             animationSpec = tween(700)
         )
     }
 
-    val _popExitTransition = popExitTransition ?: {
+    val _popExitTransition = popExitTransition
+        ?: {
         slideOutOfContainer(
-            AnimatedContentScope.SlideDirection.Right,
+            AnimatedContentScope.SlideDirection.Left,
             animationSpec = tween(700)
         )
     }
