@@ -6,15 +6,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -26,6 +19,8 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
+import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
+import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.AnimatingComposable(
@@ -95,6 +90,31 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
 
+        /*
+
+         */
+
+        /*
+        편지지 무늬 고르는 화면
+         */
+        AnimatingComposable(
+            route = ROUTE_SELECT_LETTER_DESIGN
+        ) {
+            SelectLetterDesignScreen(navController = navController)
+        }
+
+        /*
+        편지지 색상 고르는 화면
+         */
+        AnimatingComposable(
+            route = ROUTE_SELECT_LETTER_COLOR
+        ) {
+            SelectLetterColorScreen(navController = navController)
+        }
+
+        /*
+        유저 정보 기입 화면
+         */
         AnimatingComposable(
             route = ROUTE_PROFILE_SETTINGS
         ) {
@@ -109,8 +129,10 @@ fun AppNavHost(
         ) {
             LogInScreen(navController = navController)
         }
+
+
         /*
-        아래는 예시코드에요! (지울 예정)
+        스플래시 화면
          */
         AnimatingComposable(
             route = ROUTE_SPLASH

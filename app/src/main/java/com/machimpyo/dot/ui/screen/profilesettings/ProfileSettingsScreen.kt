@@ -59,6 +59,9 @@ import com.machimpyo.dot.ui.screen.profilesettings.ProfileSettingsViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.focus.FocusRequester
@@ -165,6 +168,10 @@ fun ProfileSettingsScreen(
     val spacing = LocalSpacing.current
     val dotTypo = LocalDotTypo.current
 
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
     LaunchedEffect(viewModel) {
         viewModel.effect.collect {
             when(it) {
@@ -172,7 +179,20 @@ fun ProfileSettingsScreen(
                     navController.navigate(it.route, it.builder)
                 }
                 is ProfileSettingsViewModel.Effect.ShowMessage -> {
+                    val snackBarResult = snackbarHostState.showSnackbar(
+                        message = it.message,
+                        actionLabel = it.actionLabel,
+                        duration = SnackbarDuration.Short
+                    )
 
+                    when(snackBarResult) {
+                        SnackbarResult.ActionPerformed-> {
+                            it.action()
+                        }
+                        SnackbarResult.Dismissed-> {
+                            it.dismissed()
+                        }
+                    }
                 }
             }
         }

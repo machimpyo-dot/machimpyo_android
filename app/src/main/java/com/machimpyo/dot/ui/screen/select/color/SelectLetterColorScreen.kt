@@ -1,10 +1,10 @@
-package com.machimpyo.dot.ui.screen.login
+package com.machimpyo.dot.ui.screen.select.color
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -16,33 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.machimpyo.dot.ui.theme.LocalDotTypo
-import com.machimpyo.dot.ui.theme.LocalSpacing
-
-@Preview
-@Composable
-fun LoginButtonPreview() {
-    LogInScreen(navController = rememberNavController())
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogInScreen(
+fun SelectLetterColorScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: LogInViewModel = hiltViewModel()
+    viewModel: SelectLetterColorViewModel = hiltViewModel()
 ) {
-
-    val spacing = LocalSpacing.current
-    val dotTypo = LocalDotTypo.current
 
     val snackbarHostState = remember {
         SnackbarHostState()
@@ -50,11 +35,12 @@ fun LogInScreen(
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect {
-            when(it) {
-                is LogInViewModel.Effect.NavigateTo -> {
+            when (it) {
+                is SelectLetterColorViewModel.Effect.NavigateTo -> {
                     navController.navigate(it.route, it.builder)
                 }
-                is LogInViewModel.Effect.ShowMessage -> {
+
+                is SelectLetterColorViewModel.Effect.ShowMessage -> {
                     val snackBarResult = snackbarHostState.showSnackbar(
                         message = it.message,
                         actionLabel = it.actionLabel,
@@ -75,7 +61,7 @@ fun LogInScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState
@@ -86,32 +72,15 @@ fun LogInScreen(
             }
         }
     ) { innerPadding ->
-        ConstraintLayout(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            val (buttonRef) = createRefs()
-
-            Button(
-                modifier = Modifier.constrainAs(buttonRef) {
-                    end.linkTo(parent.end, margin = spacing.medium)
-                    start.linkTo(parent.start, margin = spacing.medium)
-                    bottom.linkTo(parent.bottom, margin = spacing.medium)
-                },
-                onClick = viewModel::goToHomeScreen,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFEE500)
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text(
-                    "카카오톡으로 로그인",
-                    style = dotTypo.Dot_Display_Body_Medium_Bold.copy(
-                        color = Color.Black
-                    )
-                )
+            Button(onClick = viewModel::goToSelectDesignScreen) {
+                Text("디자인고르기")
             }
         }
     }
