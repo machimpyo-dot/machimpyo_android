@@ -1,42 +1,31 @@
-package com.machimpyo.dot.ui.screen.login
-
+package com.machimpyo.dot.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavOptionsBuilder
-import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
 import com.machimpyo.dot.repository.MainRepository
+import androidx.navigation.NavOptionsBuilder
+import com.machimpyo.dot.navigation.ROUTE_SELECT_LETTER_COLOR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
-class LogInViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val repository: MainRepository
-) : ViewModel() {
-
-    private var _state: MutableStateFlow<State> = MutableStateFlow(State())
-    val state: StateFlow<State> = _state
+): ViewModel() {
 
     private var _effect = MutableSharedFlow<Effect>()
     val effect: SharedFlow<Effect> = _effect
 
 
-    fun goToHomeScreen() = viewModelScope.launch {
+    fun goToSelectColorScreen() = viewModelScope.launch {
         _effect.emit(
             Effect.NavigateTo(
-                ROUTE_PROFILE_SETTINGS
+                ROUTE_SELECT_LETTER_COLOR
             )
         )
     }
-    data class State(
-        val tmpData: Int = 0
-    )
-
     sealed class Effect {
         data class ShowMessage(
             val message: String,
@@ -51,6 +40,4 @@ class LogInViewModel @Inject constructor(
         ): Effect()
 
     }
-
-
 }
