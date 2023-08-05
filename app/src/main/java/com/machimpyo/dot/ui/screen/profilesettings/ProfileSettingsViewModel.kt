@@ -1,10 +1,12 @@
 package com.machimpyo.dot.ui.screen.profilesettings
 
 import android.util.Log
+import androidx.compose.animation.expandHorizontally
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
+import com.machimpyo.dot.navigation.ROUTE_HOME
 import com.machimpyo.dot.repository.MainRepository
 import com.machimpyo.dot.ui.screen.login.LogInViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,20 @@ class ProfileSettingsViewModel @Inject constructor(
 
     private var _effect = MutableSharedFlow<Effect>()
     val effect: SharedFlow<Effect> = _effect
+
+    fun goToHomeScreen(navController: NavController) = viewModelScope.launch {
+        _effect.emit(
+            Effect.NavigateTo(
+                route = ROUTE_HOME
+            ) {
+                val currentRoute = navController.currentBackStackEntry?.destination?.route
+                currentRoute?.let {
+                    popUpTo(it)
+                }
+            }
+        )
+
+    }
 
     fun backButtonClicked(
         navController: NavController

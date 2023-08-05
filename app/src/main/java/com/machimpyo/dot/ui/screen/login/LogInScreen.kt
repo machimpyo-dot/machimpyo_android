@@ -108,7 +108,7 @@ fun LogInScreen(
             ) {
                 Text(
                     "카카오톡으로 로그인",
-                    style = dotTypo.Dot_Display_Body_Medium_Bold.copy(
+                    style = dotTypo.bodyMedium.copy(
                         color = Color.Black
                     )
                 )

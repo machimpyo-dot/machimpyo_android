@@ -151,4 +151,8 @@ dependencies {
 
     //ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+    //Calendar
+    implementation "com.kizitonwose.calendar:compose:$calendar_version"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$calendar_version"
 }

@@ -17,7 +17,9 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
+import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
 import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
@@ -91,8 +93,21 @@ fun AppNavHost(
     ) {
 
         /*
-
+         홈화면
          */
+        AnimatingComposable(
+            route = ROUTE_HOME
+        ) {
+            HomeScreen(navController = navController)
+        }
+        /*
+        편지 쓰는 화면
+         */
+        AnimatingComposable(
+            route = ROUTE_LETTER_WRITE
+        ) {
+            LetterWriteScreen(navController = navController)
+        }
 
         /*
         편지지 무늬 고르는 화면
@@ -102,6 +117,7 @@ fun AppNavHost(
         ) {
             SelectLetterDesignScreen(navController = navController)
         }
+        
 
         /*
         편지지 색상 고르는 화면

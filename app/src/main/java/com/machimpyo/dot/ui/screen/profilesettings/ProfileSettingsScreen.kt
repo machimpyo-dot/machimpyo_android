@@ -8,6 +8,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,6 +76,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
 import kotlinx.coroutines.NonDisposableHandle
@@ -134,7 +136,6 @@ private fun Preview() {
             }
         }
 
-        FastOutSlowInEasing
 
         TextButton(onClick = {
             coroutineScope.launch {
@@ -205,8 +206,9 @@ fun ProfileSettingsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "회원가입", style = dotTypo.DotAppBarTitle_Body_Small_Bold.copy(
-                            color = Color.Black
+                        "회원가입", style = dotTypo.bodyMedium.copy(
+                            color = DotColor.grey6,
+                            fontWeight = FontWeight.Bold
                         )
                     )
                 },
@@ -223,7 +225,9 @@ fun ProfileSettingsScreen(
 
 
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             val (contentRef, indiRef) = createRefs()
 
@@ -234,7 +238,8 @@ fun ProfileSettingsScreen(
                     .constrainAs(contentRef) {
 
                     },
-                pagerState = pagerState
+                pagerState = pagerState,
+                navController = navController
             )
         }
 
@@ -261,6 +266,8 @@ private fun NameInputPagerContent(
 
     val spacing = LocalSpacing.current
 
+    val dotTypo = LocalDotTypo.current
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -278,13 +285,15 @@ private fun NameInputPagerContent(
                 }, horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "편지에 사용할\n이름(닉네임)을 입력해주세요", style = TextStyle(
-                    fontSize = 32.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start
-                ), modifier = Modifier.align(Alignment.Start)
+                "편지에 사용할\n이름(닉네임)을 입력해주세요", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                )
+                , modifier = Modifier.align(Alignment.Start)
             )
             Text(
-                "편지지에 자동으로 입력돼요!", style = TextStyle(
-                    fontSize = 14.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Start
+                "편지지에 자동으로 입력돼요!", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
                 ), modifier = Modifier.align(Alignment.Start)
             )
         }
@@ -303,20 +312,22 @@ private fun NameInputPagerContent(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "본인 이름", style = TextStyle(
+                "본인 이름", style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
-                    color = Color.White
+                    color = DotColor.primaryColor
                 ), modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(5.dp)
-                    )
                     .padding(all = spacing.medium)
             )
             TextField(modifier = Modifier
                 .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = DotColor.primaryColor,
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .onFocusEvent { focusState ->
                     if (focusState.isFocused) {
                         coroutineScope.launch {
@@ -325,20 +336,19 @@ private fun NameInputPagerContent(
                     }
                 }, value = nickname, onValueChange = nicknameChanged, placeholder = {
                 Text(
-                    "본명이나 닉네임을 입력하세요.", style = TextStyle(
+                    "본명이나 닉네임을 입력하세요.", style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
-                        color = Color.LightGray
+                        color = DotColor.grey3
                     )
                 )
-            }, shape = RoundedCornerShape(
-                topStart = 0.dp, topEnd = 0.dp, bottomStart = 5.dp, bottomEnd = 5.dp
-            ), colors = TextFieldDefaults.textFieldColors(
+            }, colors = TextFieldDefaults.textFieldColors(
+                textColor = DotColor.grey6,
                 containerColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.primary
+                cursorColor = DotColor.primaryColor
             ), keyboardActions = KeyboardActions(onNext = {
 
             }), keyboardOptions = KeyboardOptions(
@@ -365,8 +375,9 @@ private fun NameInputPagerContent(
             ),
             enabled = nickname.isNotBlank()) {
             Text(
-                "다음", style = TextStyle(
-                    fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start
+                "다음", style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,
+                    color = DotColor.white
                 ), modifier = Modifier.padding(vertical = 10.dp)
             )
         }
@@ -382,6 +393,8 @@ private fun NameInputPagerContent(
 private fun ProfileSettingsContent(
     modifier: Modifier,
     pagerState: PagerState,
+    navController: NavController,
+    viewModel: ProfileSettingsViewModel = hiltViewModel()
 ) {
 
     var nickname by remember {
@@ -409,9 +422,10 @@ private fun ProfileSettingsContent(
                         nickname = it
                     },
                     nextButtonClicked = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        }
+//                        coroutineScope.launch {
+//                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+//                        }
+                        viewModel.goToHomeScreen(navController = navController)
                     })
             }
 
