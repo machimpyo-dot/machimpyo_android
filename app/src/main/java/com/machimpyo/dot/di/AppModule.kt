@@ -1,5 +1,7 @@
 package com.machimpyo.dot.di
 
+import com.google.firebase.auth.FirebaseAuth
+import com.kakao.sdk.user.UserApiClient
 import com.machimpyo.dot.network.endpoint.MAIN_SERVICE_BASE_URL
 import com.machimpyo.dot.network.service.MainService
 import dagger.Module
@@ -55,4 +57,19 @@ object AppModule {
     fun provideMainService(
         retrofit: Retrofit
     ): MainService = retrofit.create(MainService::class.java)
+
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth {
+
+        return FirebaseAuth.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun providesKakaoAuth(): UserApiClient {
+        return UserApiClient.instance
+    }
+
 }

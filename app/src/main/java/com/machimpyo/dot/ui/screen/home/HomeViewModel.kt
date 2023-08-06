@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.machimpyo.dot.repository.MainRepository
 import androidx.navigation.NavOptionsBuilder
 import com.machimpyo.dot.navigation.ROUTE_SELECT_LETTER_COLOR
+import com.machimpyo.dot.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: MainRepository
+    private val repository: MainRepository,
+    private val authRepository: AuthRepository
 ): ViewModel() {
 
     private var _effect = MutableSharedFlow<Effect>()
@@ -26,6 +28,11 @@ class HomeViewModel @Inject constructor(
             )
         )
     }
+
+    fun signOut() = viewModelScope.launch {
+        authRepository.logOut()
+    }
+
     sealed class Effect {
         data class ShowMessage(
             val message: String,

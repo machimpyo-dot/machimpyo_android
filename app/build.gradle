@@ -62,7 +62,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material3:material3:1.1.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -137,6 +137,12 @@ dependencies {
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
 
+    //FirebaseAuth
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    implementation 'com.google.firebase:firebase-auth:22.1.1'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.3.0'
+
+
     // Add the dependency for the Firebase SDK for Google Analytics
     implementation("com.google.firebase:firebase-analytics-ktx")
 
@@ -151,4 +157,15 @@ dependencies {
 
     //ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+    //Calendar
+    implementation "com.kizitonwose.calendar:compose:$calendar_version"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$calendar_version"
+
+    //Kakao Sdk
+    implementation "com.kakao.sdk:v2-all:$kakao_version"
+    implementation "com.kakao.sdk:v2-user:$kakao_version"
+    implementation "com.kakao.sdk:v2-talk:$kakao_version"
+    implementation "com.kakao.sdk:v2-share:$kakao_version"
+    implementation "com.kakao.sdk:v2-friend:$kakao_version"
 }

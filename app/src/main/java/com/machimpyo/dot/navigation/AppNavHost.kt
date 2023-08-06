@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
@@ -17,7 +18,10 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.machimpyo.dot.ui.auth.AuthViewModel
+import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
+import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
 import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
@@ -80,9 +84,11 @@ fun NavGraphBuilder.AnimatingComposable(
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberAnimatedNavController(),
-    startDestination: String = ROUTE_LOGIN
+    navController: NavHostController,
+    startDestination: String
 ) {
+
+
 
     AnimatedNavHost(
         modifier = modifier,
@@ -90,9 +96,24 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
 
-        /*
 
+
+        /*
+         홈화면
          */
+        AnimatingComposable(
+            route = ROUTE_HOME
+        ) {
+            HomeScreen(navController = navController)
+        }
+        /*
+        편지 쓰는 화면
+         */
+        AnimatingComposable(
+            route = ROUTE_LETTER_WRITE
+        ) {
+            LetterWriteScreen(navController = navController)
+        }
 
         /*
         편지지 무늬 고르는 화면
@@ -102,6 +123,7 @@ fun AppNavHost(
         ) {
             SelectLetterDesignScreen(navController = navController)
         }
+        
 
         /*
         편지지 색상 고르는 화면
