@@ -1,10 +1,7 @@
 package com.machimpyo.dot.ui.screen
 
-import android.widget.Toast
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
+import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -12,14 +9,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,9 +24,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -60,98 +62,83 @@ import com.machimpyo.dot.ui.screen.profilesettings.ProfileSettingsViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
-import kotlinx.coroutines.NonDisposableHandle
-import kotlinx.coroutines.NonDisposableHandle.parent
-import kotlinx.coroutines.flow.collectLatest
+import com.machimpyo.dot.utils.extension.toFormattedDate
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-private fun Preview() {
+fun ExitDatePickerDialog(
+    dismissButtonClicked: () -> Unit,
+    confirmButtonClicked: (DatePickerState) -> Unit,
+    initialSelectedDateMillis: Long? = null
+) {
+    val state = rememberDatePickerState(initialSelectedDateMillis = initialSelectedDateMillis)
 
-    val rotateState = remember {
-        Animatable(0f)
-    }
+    Log.e("TAG", "전달받은 밀리: $initialSelectedDateMillis")
 
-    val coroutineScope = rememberCoroutineScope()
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
-    ) {
-
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(200.dp)
-                    .background(
-                        color = Color.Black,
-                        shape = RectangleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("이곳에 이름", color = Color.White)
-            }
-            Box(
-                modifier = Modifier
-                    .graphicsLayer {
-                        this.transformOrigin = TransformOrigin(0f, 0.5f)
-                        this.cameraDistance = 90f
-                        this.rotationY = rotateState.value
-                    }
-                    .size(200.dp)
-                    .background(
-                        color = Color.LightGray,
-                        shape = RectangleShape
-                    ),
-                contentAlignment = Alignment.Center
-
-            ) {
-                if (rotateState.value in -90f..0f) {
-                    Text("이곳에 겉표지", color = Color.Black)
-                }
-            }
-        }
-
-
-        TextButton(onClick = {
-            coroutineScope.launch {
-                val targetValue = if (rotateState.targetValue == 0f) -270f else 0f
-                rotateState.animateTo(
-                    targetValue,
-                    tween(1500, delayMillis = 100)
+    DatePickerDialog(
+        onDismissRequest = { },
+        confirmButton = {
+            TextButton(onClick = {
+                confirmButtonClicked(state)
+            }) {
+                Text(
+                    "확인", style = MaterialTheme.typography.bodyMedium.copy(
+                        color = DotColor.primaryColor,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
-        }) {
-            Text("클릭")
-        }
+        },
+        dismissButton = {
+            TextButton(onClick = dismissButtonClicked) {
+                Text(
+                    "닫기", style = MaterialTheme.typography.bodyMedium.copy(
+                        color = DotColor.grey4,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        },
+        colors = DatePickerDefaults.colors(
+            containerColor = DotColor.white
+        ),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        DatePicker(
+            state = state,
+            showModeToggle = false,
+            colors = DatePickerDefaults.colors(
+                containerColor = DotColor.white,
+                selectedDayContainerColor = DotColor.primaryColor,
+                selectedDayContentColor = DotColor.white,
+                todayContentColor = DotColor.primaryColor,
+                todayDateBorderColor = DotColor.primaryColor,
+                headlineContentColor = DotColor.grey6,
+                selectedYearContainerColor = DotColor.primaryColor,
+                selectedYearContentColor = DotColor.white
+            ),
+            title = {},
+        )
     }
-
 }
-
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -163,7 +150,6 @@ fun ProfileSettingsScreen(
     navController: NavController,
     viewModel: ProfileSettingsViewModel = hiltViewModel()
 ) {
-
     val pagerState = rememberPagerState()
 
     val spacing = LocalSpacing.current
@@ -173,12 +159,19 @@ fun ProfileSettingsScreen(
         SnackbarHostState()
     }
 
+    var isDatePickerVisible by remember {
+        mutableStateOf(false)
+    }
+
+    val state = viewModel.state.collectAsState()
+
     LaunchedEffect(viewModel) {
         viewModel.effect.collect {
-            when(it) {
+            when (it) {
                 is ProfileSettingsViewModel.Effect.NavigateTo -> {
                     navController.navigate(it.route, it.builder)
                 }
+
                 is ProfileSettingsViewModel.Effect.ShowMessage -> {
                     val snackBarResult = snackbarHostState.showSnackbar(
                         message = it.message,
@@ -186,22 +179,44 @@ fun ProfileSettingsScreen(
                         duration = SnackbarDuration.Short
                     )
 
-                    when(snackBarResult) {
-                        SnackbarResult.ActionPerformed-> {
+                    when (snackBarResult) {
+                        SnackbarResult.ActionPerformed -> {
                             it.action()
                         }
-                        SnackbarResult.Dismissed-> {
+
+                        SnackbarResult.Dismissed -> {
                             it.dismissed()
                         }
                     }
+                }
+
+                is ProfileSettingsViewModel.Effect.HandleDatePicker -> {
+                    isDatePickerVisible = it.isVisible
                 }
             }
         }
     }
 
+    val progress by animateFloatAsState(
+        targetValue = pagerState.currentPage.toFloat().div(3),
+        label = ""
+    )
+
+
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            ) {
+                Snackbar {
+                    Text(it.visuals.message)
+                }
+            }
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -214,7 +229,14 @@ fun ProfileSettingsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        viewModel.backButtonClicked(navController)
+                        if (pagerState.currentPage == 0) {
+                            viewModel.backButtonClicked(navController)
+                        } else {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            }
+                        }
+
                     }) {
                         Icon(imageVector = Icons.Default.ChevronLeft, contentDescription = null)
                     }
@@ -231,27 +253,54 @@ fun ProfileSettingsScreen(
         ) {
             val (contentRef, indiRef) = createRefs()
 
+            LinearProgressIndicator(
+                progress = progress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(
+                        indiRef
+                    ) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                color = DotColor.primaryColor,
+                trackColor = DotColor.grey1
+            )
 
 
             ProfileSettingsContent(
                 modifier = Modifier
                     .constrainAs(contentRef) {
-
+                        top.linkTo(indiRef.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
                     },
                 pagerState = pagerState,
                 navController = navController
             )
         }
 
-
-
-
+        if (isDatePickerVisible) {
+            ExitDatePickerDialog(
+                dismissButtonClicked = {
+                    viewModel.handleDatePicker(false)
+                }, confirmButtonClicked = { datePickerState ->
+                    datePickerState.selectedDateMillis?.let {
+                        viewModel.handleExitDate(it)
+                    }
+                    viewModel.handleDatePicker(false)
+                },
+                initialSelectedDateMillis = state.value.exitDate
+            )
+        }
     }
 
 
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NameInputPagerContent(
     modifier: Modifier = Modifier,
@@ -266,7 +315,6 @@ private fun NameInputPagerContent(
 
     val spacing = LocalSpacing.current
 
-    val dotTypo = LocalDotTypo.current
 
     ConstraintLayout(
         modifier = Modifier
@@ -287,8 +335,7 @@ private fun NameInputPagerContent(
             Text(
                 "편지에 사용할\n이름(닉네임)을 입력해주세요", style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
-                )
-                , modifier = Modifier.align(Alignment.Start)
+                ), modifier = Modifier.align(Alignment.Start)
             )
             Text(
                 "편지지에 자동으로 입력돼요!", style = MaterialTheme.typography.headlineLarge.copy(
@@ -319,41 +366,47 @@ private fun NameInputPagerContent(
                     color = DotColor.primaryColor
                 ), modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = spacing.medium)
+                    .padding(all = spacing.small)
             )
-            TextField(modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = DotColor.primaryColor,
-                    shape = RoundedCornerShape(10.dp)
-                )
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        coroutineScope.launch {
-                            bringIntoViewRequester.bringIntoView()
-                        }
-                    }
-                }, value = nickname, onValueChange = nicknameChanged, placeholder = {
-                Text(
-                    "본명이나 닉네임을 입력하세요.", style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Start,
-                        color = DotColor.grey3
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = DotColor.primaryColor,
+                        shape = RoundedCornerShape(10.dp)
                     )
-                )
-            }, colors = TextFieldDefaults.textFieldColors(
-                textColor = DotColor.grey6,
-                containerColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = DotColor.primaryColor
-            ), keyboardActions = KeyboardActions(onNext = {
-
-            }), keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            coroutineScope.launch {
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    },
+                value = nickname,
+                onValueChange = nicknameChanged,
+                placeholder = {
+                    Text(
+                        "본명이나 닉네임을 입력하세요.", style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Start,
+                            color = DotColor.grey3
+                        )
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = DotColor.grey6,
+                    cursorColor = DotColor.primaryColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                keyboardActions = KeyboardActions(onNext = { nextButtonClicked() }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
             )
         }
 
@@ -386,8 +439,296 @@ private fun NameInputPagerContent(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ExitDateInputPagerContent(
+    modifier: Modifier = Modifier,
+    nextButtonClicked: () -> Unit,
+    viewModel: ProfileSettingsViewModel = hiltViewModel()
+) {
+
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val spacing = LocalSpacing.current
+
+    val state = viewModel.state.collectAsState()
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = spacing.medium)
+    ) {
+        val (topComment, bottomButton, userInput) = createRefs()
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(topComment) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "언제 퇴사 예정이신가요?", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                ), modifier = Modifier.align(Alignment.Start)
+            )
+            Text(
+                "퇴사 일정에 맞춰 편지를 관리해보세요", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                ), modifier = Modifier.align(Alignment.Start)
+            )
+        }
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(userInput) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "퇴사 예정일", style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    color = DotColor.primaryColor
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = spacing.small)
+            )
+
+            OutlinedButton(
+                onClick = {
+                    if(state.value.isNotAssigned) {
+                        viewModel.showMessageForAssigningExitDate()
+                        return@OutlinedButton
+                    }
+                    viewModel.handleDatePicker(true)
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = DotColor.white,
+                    contentColor = DotColor.primaryColor,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+
+                val commentOrExitDate = state.value.exitDate?.toFormattedDate() ?: "퇴사 예정일 설정"
+
+                Text(
+                    commentOrExitDate, style = MaterialTheme.typography.bodyMedium.copy(
+                        color = DotColor.grey6
+                    )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "퇴사 결정을 아직 못했어요 :(", style = MaterialTheme.typography.bodyMedium.copy(
+                        color = DotColor.grey5,
+                    ),
+                    modifier = Modifier.padding(start = spacing.small)
+                )
+
+                Checkbox(
+                    checked = state.value.isNotAssigned, onCheckedChange = {
+                        viewModel.handleNotAssignedExitDate(it)
+                    },
+                    colors = CheckboxDefaults.colors(
+                        uncheckedColor = DotColor.grey3,
+                        checkedColor = DotColor.primaryColor,
+                        checkmarkColor = DotColor.white
+                    )
+                )
+
+            }
+        }
+
+        TextButton(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(bottomButton) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+            .bringIntoViewRequester(
+                bringIntoViewRequester
+            ),
+            onClick = nextButtonClicked,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = Color.LightGray
+            )) {
+            Text(
+                "완료", style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,
+                    color = DotColor.white
+                ), modifier = Modifier.padding(vertical = 10.dp)
+            )
+        }
+
+    }
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CompanyInputPagerContent(
+    modifier: Modifier = Modifier,
+    company: String,
+    companyChanged: (String) -> Unit,
+    nextButtonClicked: () -> Unit
+) {
+
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val spacing = LocalSpacing.current
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = spacing.medium)
+    ) {
+        val (topComment, bottomButton, userInput) = createRefs()
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(topComment) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "현재 다니고 있는\n회사가 어딘지 알려주세요", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                ), modifier = Modifier.align(Alignment.Start)
+            )
+            Text(
+                "편지들을 회사별로 관리해보세요!", style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                ), modifier = Modifier.align(Alignment.Start)
+            )
+        }
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(userInput) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "회사 이름", style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    color = DotColor.primaryColor
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = spacing.small)
+            )
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = DotColor.primaryColor,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            coroutineScope.launch {
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    },
+                value = company,
+                onValueChange = companyChanged,
+                placeholder = {
+                    Text(
+                        "퇴사할 회사를 입력해주세요", style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Start,
+                            color = DotColor.grey3
+                        )
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = DotColor.grey6,
+                    cursorColor = DotColor.primaryColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                ),
+                keyboardActions = KeyboardActions(onNext = { nextButtonClicked() }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                )
+            )
+        }
+
+        TextButton(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(bottomButton) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+            .bringIntoViewRequester(
+                bringIntoViewRequester
+            ),
+            onClick = nextButtonClicked,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = Color.LightGray
+            ),
+            enabled = company.isNotBlank()) {
+            Text(
+                "다음", style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,
+                    color = DotColor.white
+                ), modifier = Modifier.padding(vertical = 10.dp)
+            )
+        }
+
+    }
+
+}
+
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalPagerApi::class
+    ExperimentalPagerApi::class
 )
 @Composable
 private fun ProfileSettingsContent(
@@ -397,52 +738,52 @@ private fun ProfileSettingsContent(
     viewModel: ProfileSettingsViewModel = hiltViewModel()
 ) {
 
-    var nickname by remember {
-        mutableStateOf("")
-    }
+    val state = viewModel.state.collectAsState()
 
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
+    val focusManager = LocalFocusManager.current
 
     val coroutineScope = rememberCoroutineScope()
-
 
     HorizontalPager(
         count = 3,
         modifier = Modifier.fillMaxSize(),
+        userScrollEnabled = false,
         state = pagerState,
     ) { index ->
 
         when (index) {
             0 -> {
                 NameInputPagerContent(
-                    nickname = nickname,
+                    nickname = state.value.nickname,
                     nicknameChanged = {
-                        nickname = it
+                        viewModel.handleNickname(it)
                     },
                     nextButtonClicked = {
-//                        coroutineScope.launch {
-//                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-//                        }
-                        viewModel.goToHomeScreen(navController = navController)
+                        coroutineScope.launch {
+                            focusManager.clearFocus()
+                            pagerState.animateScrollToPage(1)
+                        }
                     })
             }
 
             1 -> {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-
-                }
+                CompanyInputPagerContent(company = state.value.company, companyChanged = {
+                    viewModel.handleCompany(it)
+                }, nextButtonClicked = {
+                    coroutineScope.launch {
+                        focusManager.clearFocus()
+                        pagerState.animateScrollToPage(2)
+                    }
+                })
             }
 
             else -> {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-
-                }
+                ExitDateInputPagerContent(
+                    modifier = Modifier.fillMaxSize(),
+                    nextButtonClicked = {
+                        viewModel.goToHomeScreen(navController = navController)
+                    }
+                )
             }
         }
 

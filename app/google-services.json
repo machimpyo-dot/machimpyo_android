@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "249529867965-b8c4v7dgfumrmbnpbqpc91f23rnnogvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.machimpyo.dot",
+            "certificate_hash": "4ad4abf3846eafaa51cae79ca9f33f954a54a7a2"
+          }
+        },
+        {
           "client_id": "249529867965-d8rtt31as3e1l0lchr450q42lt9lecct.apps.googleusercontent.com",
           "client_type": 3
         }

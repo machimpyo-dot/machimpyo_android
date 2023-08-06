@@ -9,12 +9,14 @@ buildscript {
         retrofit_version = "2.9.0"
         okhttp_version="4.9.3"
         nav_version = "2.7.0-alpha01+"
+        kakao_version = "2.15.0"
     }
 
     repositories {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        maven { url "https://devrepo.kakao.com/nexus/content/groups/public/"}
     }
 
     dependencies {

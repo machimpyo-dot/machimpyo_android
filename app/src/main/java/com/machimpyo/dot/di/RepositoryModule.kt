@@ -1,6 +1,8 @@
 package com.machimpyo.dot.di
 
+import com.machimpyo.dot.repository.AuthRepository
 import com.machimpyo.dot.repository.MainRepository
+import com.machimpyo.dot.repository.impl.AuthRepositoryImpl
 import com.machimpyo.dot.repository.impl.MainRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -18,5 +20,11 @@ abstract class RepositoryModule {
         mainRepositoryImpl: MainRepositoryImpl
     ): MainRepository
 
+
+    @Singleton
+    @Binds
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 
 }

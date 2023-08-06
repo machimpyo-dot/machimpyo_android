@@ -295,16 +295,18 @@ fun HomeScreen(
                     )
                 )
             }, navigationIcon = {
-                IconButton(
-                    onClick = {
-                        navController.popBackStack()
+                if( navController.previousBackStackEntry != null) {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronLeft,
+                            tint = DotColor.grey6,
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ChevronLeft,
-                        tint = DotColor.grey6,
-                        contentDescription = null
-                    )
                 }
             }
                 )
@@ -328,6 +330,9 @@ fun HomeScreen(
         ) {
             Button(onClick = viewModel::goToSelectColorScreen) {
                 Text("편지쓰기")
+            }
+            Button(onClick = viewModel::signOut) {
+                Text("로그아웃")
             }
         }
     }
