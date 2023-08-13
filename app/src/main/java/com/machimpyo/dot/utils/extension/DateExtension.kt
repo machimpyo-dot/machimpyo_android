@@ -8,6 +8,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 fun Long.toLocalDate(): LocalDate {
@@ -42,4 +43,9 @@ fun LocalDate.toFormattedDate(formatter: DateTimeFormatter? = null): String {
 fun LocalDateTime.toFormattedDate(formatter: DateTimeFormatter? = null): String {
     val _formatter = formatter ?: DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm", Locale.getDefault())
     return this.format(_formatter)
+}
+
+fun LocalDate.toDDay(): Long {
+    val today = LocalDate.now(ZoneId.systemDefault())
+    return ChronoUnit.DAYS.between(today, this)
 }

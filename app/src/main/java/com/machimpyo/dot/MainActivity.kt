@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.machimpyo.dot.navigation.AppNavHost
 import com.machimpyo.dot.navigation.ROUTE_HOME
 import com.machimpyo.dot.navigation.ROUTE_LOGIN
+import com.machimpyo.dot.navigation.ROUTE_MY_PAGE
 import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
@@ -53,7 +54,8 @@ class MainActivity : ComponentActivity() {
                         //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
                         //이때 uid로 동일 사용자인지 구분할 필요 있음
                         //datastore 고려해보고 있음
-                        else ROUTE_PROFILE_SETTINGS
+//                        else ROUTE_PROFILE_SETTINGS
+                        else ROUTE_MY_PAGE
                     )
                 }
             }

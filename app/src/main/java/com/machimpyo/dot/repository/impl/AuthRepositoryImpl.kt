@@ -8,6 +8,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.machimpyo.dot.network.service.MainService
 import com.machimpyo.dot.repository.AuthRepository
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -18,13 +19,13 @@ class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val kakaoAuth: UserApiClient,
     private val mainService: MainService,
-    @ApplicationContext private val context: Context
+//    @ActivityContext private val context: Context
 ): AuthRepository {
 
     override val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
 
-    override suspend fun signInWithKakao(callback: (Result<FirebaseUser>) -> Unit) {
+    override suspend fun signInWithKakao(context: Context, callback: (Result<FirebaseUser>) -> Unit) {
         try {
             Log.e("TAG", "레포지토리 옴!!!")
             if(kakaoAuth.isKakaoTalkLoginAvailable(context)) {

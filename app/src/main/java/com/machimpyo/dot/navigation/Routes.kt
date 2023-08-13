@@ -13,3 +13,4 @@ const val ROUTE_STORAGE="storage"//편지 보관함 화면
 const val ROUTE_STORAGE_DETAIL="storage_detail" //편지함 세부 목록 화면
 const val ROUTE_PROFILE_SETTINGS = "profile_settings"//처음 유저 정보 받기
 const val ROUTE_LOGIN = "login" //로그인 화면
+const val ROUTE_MY_PAGE = "my_page"

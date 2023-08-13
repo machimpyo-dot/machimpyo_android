@@ -153,7 +153,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-dynamic-links-ktx:21.1.0'
 
     //Sphere Text View
-    implementation 'io.github.oleksandrbalan:tagcloud:1.0.0'
+    implementation 'io.github.oleksandrbalan:tagc' +
+            'loud:1.0.0'
 
     //ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
@@ -168,4 +169,7 @@ dependencies {
     implementation "com.kakao.sdk:v2-talk:$kakao_version"
     implementation "com.kakao.sdk:v2-share:$kakao_version"
     implementation "com.kakao.sdk:v2-friend:$kakao_version"
+
+    //Coil Image
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

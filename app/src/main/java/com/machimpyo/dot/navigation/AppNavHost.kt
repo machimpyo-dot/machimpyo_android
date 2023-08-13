@@ -23,6 +23,7 @@ import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
+import com.machimpyo.dot.ui.screen.mypage.MyPageScreen
 import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
 
@@ -88,15 +89,20 @@ fun AppNavHost(
     startDestination: String
 ) {
 
-
-
     AnimatedNavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination
     ) {
 
-
+        /*
+        마이 페이지 화면
+         */
+        AnimatingComposable(
+            route = ROUTE_MY_PAGE
+        ) {
+            MyPageScreen(navController = navController)
+        }
 
         /*
          홈화면

@@ -101,6 +101,7 @@ class ProfileSettingsViewModel @Inject constructor(
     }
 
     fun handleExitDate(exitDate: Long?) = viewModelScope.launch {
+        //TODO(나중에 서버로 전송 처리해야겠지?)
         _state.update {
             it.copy(
                 exitDate = exitDate

@@ -37,8 +37,8 @@ class AuthViewModel @Inject constructor(
         firebaseAuth.removeAuthStateListener(authStateListener)
     }
 
-    fun kakaoLogin() = viewModelScope.launch {
-        repository.signInWithKakao { result->
+    fun kakaoLogin(context: Context) = viewModelScope.launch {
+        repository.signInWithKakao(context) { result->
             Log.e("TAG","로그인 테스트!!! $result")
         }
     }

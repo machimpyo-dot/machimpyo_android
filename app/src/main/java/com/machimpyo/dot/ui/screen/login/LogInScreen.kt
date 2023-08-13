@@ -113,7 +113,7 @@ fun LogInScreen(
                     },
                 onClick = {
 //                    viewModel.goToHomeScreen()
-                    authViewModel.kakaoLogin()
+                    authViewModel.kakaoLogin(context)
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFEE500)
