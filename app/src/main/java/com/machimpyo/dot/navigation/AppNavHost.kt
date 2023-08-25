@@ -202,7 +202,19 @@ fun AppNavHost(
         편지 쓰는 화면
          */
         AnimatingComposable(
-            route = ROUTE_LETTER_WRITE
+            route = "$ROUTE_LETTER_WRITE/{color_id}/{pattern_id}",
+            arguments = listOf(
+                navArgument("color_id") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                },
+                navArgument("pattern_id") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
         ) {
             LetterWriteScreen(navController = navController)
         }
@@ -211,7 +223,14 @@ fun AppNavHost(
         편지지 무늬 고르는 화면
          */
         AnimatingComposable(
-            route = ROUTE_SELECT_LETTER_DESIGN
+            route = "$ROUTE_SELECT_LETTER_DESIGN/{color_id}",
+            arguments = listOf(
+                navArgument("color_id") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
         ) {
             SelectLetterDesignScreen(navController = navController)
         }
@@ -223,7 +242,9 @@ fun AppNavHost(
         AnimatingComposable(
             route = ROUTE_SELECT_LETTER_COLOR
         ) {
-            SelectLetterColorScreen(navController = navController)
+            SelectLetterColorScreen(
+                navController = navController
+            )
         }
 
         /*
