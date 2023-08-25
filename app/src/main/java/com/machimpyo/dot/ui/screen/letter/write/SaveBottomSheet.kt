@@ -23,7 +23,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.machimpyo.dot.ui.screen.select.Letter
 import com.machimpyo.dot.ui.theme.DotColor
-import com.machimpyo.dot.ui.theme.dotTypo
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +35,8 @@ fun SaveBottomSheet(
 //    val scope = rememberCoroutineScope()
 //    val scaffoldState = rememberBottomSheetScaffoldState()
 
+    val dotTypo = LocalDotTypo.current
+    
     val state by viewModel.state.collectAsState()
 
     ModalBottomSheet(
@@ -50,6 +52,8 @@ fun SaveBottomSheet(
 fun SaveBottomSheetTop(
     saveNum: Int,
 ) {
+    val dotTypo = LocalDotTypo.current
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,7 +61,7 @@ fun SaveBottomSheetTop(
     ) {
         val (saveTextConstraint, saveNumConstraint, saveInfoConstraint) = createRefs()
         Text(text = "임시저장",
-            style = MaterialTheme.dotTypo.labelMedium.copy(
+            style = dotTypo.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
             modifier = Modifier.constrainAs(saveTextConstraint) {
@@ -67,7 +71,7 @@ fun SaveBottomSheetTop(
         )
 
         Text(text = ""+saveNum,
-            style = MaterialTheme.dotTypo.labelSmall,
+            style = dotTypo.labelSmall,
             modifier = Modifier.constrainAs(saveNumConstraint) {
                 start.linkTo(saveTextConstraint.start)
                 linkTo(parent.top,parent.bottom)
@@ -75,7 +79,7 @@ fun SaveBottomSheetTop(
         )
 
         Text(text = "최대 5개까지 저장",
-            style = MaterialTheme.dotTypo.labelSmall,
+            style = dotTypo.labelSmall,
             color = DotColor.grey5,
             modifier = Modifier.constrainAs(saveInfoConstraint) {
                 end.linkTo(parent.end)
@@ -94,12 +98,14 @@ fun SaveBottomSheetItemFactory(letterList: List<Letter>) {
 
 @Composable
 fun SaveBottomSheetItem(letter: Letter) {
+
+    val dotTypo = LocalDotTypo.current
     Column {
         Text(text = letter.title,
-            style = MaterialTheme.dotTypo.labelMedium,
+            style = dotTypo.labelMedium,
             color = DotColor.grey6)
         Text(text = letter.content,
-            style = MaterialTheme.dotTypo.labelSmall,
+            style = dotTypo.labelSmall,
             color = DotColor.grey4)
     }
 }

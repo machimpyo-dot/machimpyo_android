@@ -66,7 +66,7 @@ import com.machimpyo.dot.ui.screen.select.LetterContent
 import com.machimpyo.dot.ui.screen.select.LetterTextRemain
 import com.machimpyo.dot.ui.screen.select.LetterTitle
 import com.machimpyo.dot.ui.theme.DotColor
-import com.machimpyo.dot.ui.theme.dotTypo
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.topappbar.Back
 import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
 import com.machimpyo.dot.ui.topappbar.Save
@@ -89,6 +89,8 @@ fun LetterWriteScreen(
     val snackbarHostState = remember {
         SnackbarHostState()
     }
+
+
 
     var back by remember { mutableStateOf(false) }
     var send by remember { mutableStateOf(false) }
@@ -315,6 +317,8 @@ fun SendPopup(
     url: String,
     checkOnClick: () -> Unit = {},
 ) {
+    val dotTypo = LocalDotTypo.current
+
     AnimatedVisibility(visible= visible) {
 
         MainDialog(
@@ -330,7 +334,7 @@ fun SendPopup(
             ) {
 
                 Text(text = "링크 공유",
-                    style = MaterialTheme.dotTypo.labelSmall.copy(
+                    style = dotTypo.labelSmall.copy(
                         fontWeight = FontWeight.Medium
                     )
                 )
@@ -338,7 +342,7 @@ fun SendPopup(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(text = "해당 양식은 URL에서 공유할 수 있습니다.",
-                    style = MaterialTheme.dotTypo.labelMedium.copy(
+                    style = dotTypo.labelMedium.copy(
                         fontWeight = FontWeight.SemiBold,),
                     color = DotColor.grey5
                 )
@@ -365,7 +369,7 @@ fun SendPopup(
 
                     Text(
                         text = url,
-                        style = MaterialTheme.dotTypo.labelMedium.copy(
+                        style = dotTypo.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             lineHeightStyle = LineHeightStyle(
                                 alignment = LineHeightStyle.Alignment.Center,
@@ -409,6 +413,7 @@ fun SendPopup(
 fun ConfirmButton(
     onClick: () -> Unit = {}
 ) {
+    val dotTypo = LocalDotTypo.current
 
     Button(
         modifier = Modifier.size(63.dp, 30.dp),
@@ -421,7 +426,7 @@ fun ConfirmButton(
     ) {
         Text(
             text = "확인",
-            style = MaterialTheme.dotTypo.labelMedium.copy(
+            style = dotTypo.labelMedium.copy(
                 fontWeight= FontWeight.SemiBold,
                 textAlign= TextAlign.Center ,
                 lineHeightStyle = LineHeightStyle(
