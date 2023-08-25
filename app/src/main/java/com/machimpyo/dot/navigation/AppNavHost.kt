@@ -30,6 +30,7 @@ import com.machimpyo.dot.ui.screen.box.BoxViewModel
 import com.machimpyo.dot.ui.screen.content.detail.ContentDetailScreen
 import com.machimpyo.dot.ui.screen.content.detail.ContentDetailViewModel
 import com.machimpyo.dot.ui.screen.home.HomeViewModel
+import com.machimpyo.dot.ui.screen.letter.check.LetterCheckScreen
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
 import com.machimpyo.dot.ui.screen.login.LogInViewModel
@@ -198,6 +199,22 @@ fun AppNavHost(
             val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
+
+        /*
+        편지지 무늬 고르는 화면
+         */
+        AnimatingComposable(
+            route = "$ROUTE_LETTER_CHECK/{letter_uid}",
+            arguments = listOf(
+                navArgument("letter_uid") {
+                    type = NavType.LongType
+                    nullable = false
+                }
+            )
+        ) {
+            LetterCheckScreen(navController = navController)
+        }
+
         /*
         편지 쓰는 화면
          */
