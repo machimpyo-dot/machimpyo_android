@@ -4,11 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptionsBuilder
-import com.machimpyo.dot.navigation.ROUTE_HOME
+import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.navigation.ROUTE_LETTER_WRITE
 import com.machimpyo.dot.repository.MainRepository
-import com.machimpyo.dot.ui.screen.select.Letter
-import com.machimpyo.dot.ui.topappbar.Save
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +22,11 @@ data class SaveState(
 )
 
 val testList = listOf<Letter>(
-    Letter("이나경","안녕하세요"),
-    Letter("김종구", "반가워요"),
-    Letter("이재준","ㅓ아ㅣ버ㅣㅏ어 래ㅑㅔ버ㅐㅑ거비ㅏㅓ리ㅏ멍 리ㅏㅁ ㅓㅣ아러;;ㅣ받 ㅓ개ㅔㅑ 며ㅓ야러미아ㅓㄹ")
+    Letter.getMock(),
+    Letter.getMock(),
+    Letter.getMock(),
+    Letter.getMock(),
+    Letter.getMock(),
 )
 @HiltViewModel
 class SaveBottomSheetViewModel @Inject constructor(
@@ -44,6 +44,11 @@ class SaveBottomSheetViewModel @Inject constructor(
         )
     }
 
+    private suspend fun getTempLetters(): List<Letter> {
+
+        return testList
+    }
+
     private val _state = MutableStateFlow(
         SaveState(
             tempLetterList = listOf<Letter>(),
@@ -55,11 +60,15 @@ class SaveBottomSheetViewModel @Inject constructor(
     var state = _state.asStateFlow()
 
     init {
-        _state.value = _state.value.copy(
-            tempLetterList = testList,
-            tempLetterNum = testList.size,
-            isEmpty = testList.isEmpty()
-        )
+        viewModelScope.launch {
+            val tempLetters = getTempLetters()
+
+            _state.value = _state.value.copy(
+                tempLetterList = tempLetters,
+                tempLetterNum = tempLetters.size,
+                isEmpty = tempLetters.isEmpty()
+            )
+        }
     }
     sealed class Effect {
         data class ShowMessage(

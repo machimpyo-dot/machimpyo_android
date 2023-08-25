@@ -1,7 +1,5 @@
 package com.machimpyo.dot.ui.screen.letter.write
 
-import android.content.pm.PackageManager
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavOptionsBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,12 +8,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.machimpyo.dot.BuildConfig
+import com.machimpyo.dot.data.model.Letter
+import com.machimpyo.dot.data.model.LetterConfig
 import com.machimpyo.dot.navigation.ROUTE_HOME
-import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.repository.MainRepository
 import com.machimpyo.dot.ui.screen.select.Letter
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,6 +21,7 @@ data class SelectLetterWriteState(
     val selectedColor: Int,
     val selectedPattern: Int,
     var letter: Letter,
+    val letterConfig: LetterConfig,
 )
 @HiltViewModel
 class LetterWriteViewModel @Inject constructor(
@@ -95,14 +93,14 @@ class LetterWriteViewModel @Inject constructor(
     }
     fun contentValueChange(content: String) {
         //MaxLength보다 크면 조기리턴
-        if (content.length > _state.value.letter.contentMaxLength) return
+        if (content.length > _state.value.letterConfig.contentMaxLength) return
         //줄이 contentMaxLine만큼 있으면 조기 리턴
-        if (content.count { alphabet -> alphabet == '\n' } >= _state.value.letter.contentMaxLine) return
+        if (content.count { alphabet -> alphabet == '\n' } >= _state.value.letterConfig.contentMaxLine) return
 
         //            _state.value.letter.content = content
         _state.value = _state.value.copy(
             letter= _state.value.letter.copy(
-                content= content,
+                contents= content,
             )
         )
     }
@@ -111,7 +109,14 @@ class LetterWriteViewModel @Inject constructor(
         SelectLetterWriteState(
             selectedColor = 0,
             selectedPattern = 0,
-            letter= Letter(title= ""),
+            letter= Letter(
+                title= "",
+                contents = "",
+                uid = 0,
+                profileUrl = "",
+                nickname = "",
+                url = ""),
+            letterConfig = LetterConfig()
         )
     )
 
