@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Machimpyo" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="AppTheme.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+<!--        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">null</item>-->
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Machimpyo</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" >true</item>
+        <item name="android:navigationBarColor">@color/fui_transparent</item>
+    </style>
 </resources>

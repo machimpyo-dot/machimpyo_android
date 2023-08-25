@@ -5,7 +5,10 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,17 +18,28 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
+import com.machimpyo.dot.ui.screen.box.BoxScreen
+import com.machimpyo.dot.ui.screen.box.BoxViewModel
+import com.machimpyo.dot.ui.screen.content.detail.ContentDetailScreen
+import com.machimpyo.dot.ui.screen.content.detail.ContentDetailViewModel
+import com.machimpyo.dot.ui.screen.home.HomeViewModel
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
+import com.machimpyo.dot.ui.screen.login.LogInViewModel
 import com.machimpyo.dot.ui.screen.mypage.MyPageScreen
+import com.machimpyo.dot.ui.screen.mypage.MyPageViewModel
+import com.machimpyo.dot.ui.screen.profilesettings.ProfileSettingsViewModel
 import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
+import com.machimpyo.dot.ui.screen.web.WebViewScreen
+import com.machimpyo.dot.ui.screen.web.WebViewViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.AnimatingComposable(
@@ -48,45 +62,48 @@ fun NavGraphBuilder.AnimatingComposable(
 
     val _exitTransition = exitTransition
         ?: {
-        slideOutOfContainer(
-            AnimatedContentScope.SlideDirection.Left,
-            animationSpec = tween(700)
-        )
-    }
+            slideOutOfContainer(
+                AnimatedContentScope.SlideDirection.Right,
+                animationSpec = tween(700)
+            )
+        }
 
     val _popEnterTransition = popEnterTransition
         ?: {
-        slideIntoContainer(
-            AnimatedContentScope.SlideDirection.Left,
-            animationSpec = tween(700)
-        )
-    }
-
-    val _popExitTransition = popExitTransition
+            slideIntoContainer(
+                AnimatedContentScope.SlideDirection.Right,
+                animationSpec = tween(700)
+            )
+        }
+//
+    val _popExitTransition = popExitTransition //이대로 씀
         ?: {
-        slideOutOfContainer(
-            AnimatedContentScope.SlideDirection.Left,
-            animationSpec = tween(700)
-        )
-    }
+            slideOutOfContainer(
+                AnimatedContentScope.SlideDirection.Left,
+                animationSpec = tween(700)
+            )
+
+        }
 
     composable(
         route = route,
         arguments = arguments,
         deepLinks = deepLinks,
         enterTransition = _enterTransition,
-        exitTransition = _exitTransition,
-        popEnterTransition = _popEnterTransition,
+//        exitTransition = _exitTransition,
+//        popEnterTransition = _popEnterTransition,
         popExitTransition = _popExitTransition,
         content = content
     )
 }
+
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    startDestination: String
+    startDestination: String,
+    authViewModel: AuthViewModel
 ) {
 
     AnimatedNavHost(
@@ -96,12 +113,80 @@ fun AppNavHost(
     ) {
 
         /*
+        박스 화면
+         */
+        AnimatingComposable(
+            ROUTE_BOX
+        ) {
+            val boxViewModel: BoxViewModel = hiltViewModel()
+            BoxScreen(navController = navController, viewModel = boxViewModel)
+        }
+
+        /*
+        웹뷰 화면
+         */
+        AnimatingComposable(
+            "$ROUTE_WEB_VIEW?url={url}",
+            arguments = listOf(
+                navArgument(
+                    "url"
+                ) {
+                    defaultValue = null
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {navBackStackEntry->
+
+            val url = navBackStackEntry.arguments?.getString("url")
+
+            if(url == null) {
+                val viewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
+            } else {
+                val viewModel: WebViewViewModel = hiltViewModel()
+                WebViewScreen(navController = navController, viewModel = viewModel, url = url)
+            }
+
+        }
+
+
+        /*
+        콘텐츠 세부 화면
+         */
+        AnimatingComposable(
+            "$ROUTE_CONTENT_DETAIL?contentUid={contentUid}",
+            arguments = listOf(
+                navArgument(
+                    "contentUid"
+                ) {
+                    defaultValue = 0
+                    type = NavType.IntType
+                    nullable = false
+                }
+            )
+        ) {navBackStackEntry->
+
+            val contentUid = navBackStackEntry.arguments?.getInt("contentUid")
+
+            if(contentUid == null) {
+                val viewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
+            } else {
+                val viewModel: ContentDetailViewModel = hiltViewModel()
+                ContentDetailScreen(navController = navController, viewModel = viewModel, contentUid = contentUid)
+            }
+
+        }
+
+        /*
         마이 페이지 화면
          */
         AnimatingComposable(
             route = ROUTE_MY_PAGE
         ) {
-            MyPageScreen(navController = navController)
+            val viewModel: MyPageViewModel = hiltViewModel()
+            MyPageScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
 
         /*
@@ -110,7 +195,8 @@ fun AppNavHost(
         AnimatingComposable(
             route = ROUTE_HOME
         ) {
-            HomeScreen(navController = navController)
+            val viewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
         /*
         편지 쓰는 화면
@@ -129,7 +215,7 @@ fun AppNavHost(
         ) {
             SelectLetterDesignScreen(navController = navController)
         }
-        
+
 
         /*
         편지지 색상 고르는 화면
@@ -146,7 +232,12 @@ fun AppNavHost(
         AnimatingComposable(
             route = ROUTE_PROFILE_SETTINGS
         ) {
-            ProfileSettingsScreen(navController = navController)
+            val viewModel: ProfileSettingsViewModel = hiltViewModel()
+            ProfileSettingsScreen(
+                navController = navController,
+                viewModel = viewModel,
+                authViewModel = authViewModel
+            )
         }
 
         /*
@@ -155,17 +246,8 @@ fun AppNavHost(
         AnimatingComposable(
             route = ROUTE_LOGIN
         ) {
-            LogInScreen(navController = navController)
-        }
-
-
-        /*
-        스플래시 화면
-         */
-        AnimatingComposable(
-            route = ROUTE_SPLASH
-        ) {
-            
+            val viewModel: LogInViewModel = hiltViewModel()
+            LogInScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
 
 

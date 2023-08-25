@@ -45,6 +45,12 @@ val Typography = Typography(
         fontSize = 52.sp,
         letterSpacing = (-1.2).sp
     ),
+    displaySmall = TextStyle(
+        fontFamily = pretendard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 36.sp,
+        letterSpacing = (-1.2).sp
+    ),
     headlineLarge = TextStyle(
         fontFamily = pretendard,
         fontWeight = FontWeight.ExtraBold,
@@ -74,6 +80,6 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         letterSpacing = (-1.2).sp
-    )
+    ),
 
 )

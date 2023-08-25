@@ -76,10 +76,12 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
 import com.machimpyo.dot.utils.extension.toFormattedDate
+import com.machimpyo.dot.utils.extension.toLocalDate
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +150,8 @@ fun ExitDatePickerDialog(
 fun ProfileSettingsScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ProfileSettingsViewModel = hiltViewModel()
+    viewModel: ProfileSettingsViewModel,
+    authViewModel: AuthViewModel
 ) {
     val pagerState = rememberPagerState()
 
@@ -163,7 +166,13 @@ fun ProfileSettingsScreen(
         mutableStateOf(false)
     }
 
-    val state = viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsState()
+
+    val userState by authViewModel.userState.collectAsState()
+
+    LaunchedEffect(authViewModel) {
+        viewModel.initState(userState.userInfo)
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect {
@@ -278,7 +287,9 @@ fun ProfileSettingsScreen(
                         bottom.linkTo(parent.bottom)
                     },
                 pagerState = pagerState,
-                navController = navController
+                navController = navController,
+                viewModel = viewModel,
+                authViewModel = authViewModel
             )
         }
 
@@ -289,10 +300,12 @@ fun ProfileSettingsScreen(
                 }, confirmButtonClicked = { datePickerState ->
                     datePickerState.selectedDateMillis?.let {
                         viewModel.handleExitDate(it)
+
+
                     }
                     viewModel.handleDatePicker(false)
                 },
-                initialSelectedDateMillis = state.value.exitDate
+                initialSelectedDateMillis = state.exitDate
             )
         }
     }
@@ -304,7 +317,7 @@ fun ProfileSettingsScreen(
 @Composable
 private fun NameInputPagerContent(
     modifier: Modifier = Modifier,
-    nickname: String,
+    nickname: String?,
     nicknameChanged: (String) -> Unit,
     nextButtonClicked: () -> Unit
 ) {
@@ -359,7 +372,7 @@ private fun NameInputPagerContent(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "본인 이름", style = MaterialTheme.typography.bodyMedium.copy(
+                "닉네임", style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
@@ -383,7 +396,7 @@ private fun NameInputPagerContent(
                             }
                         }
                     },
-                value = nickname,
+                value = nickname ?: "",
                 onValueChange = nicknameChanged,
                 placeholder = {
                     Text(
@@ -426,7 +439,7 @@ private fun NameInputPagerContent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 disabledContainerColor = Color.LightGray
             ),
-            enabled = nickname.isNotBlank()) {
+            enabled = !nickname.isNullOrBlank()) {
             Text(
                 "다음", style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,
@@ -453,7 +466,7 @@ private fun ExitDateInputPagerContent(
 
     val spacing = LocalSpacing.current
 
-    val state = viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     ConstraintLayout(
         modifier = Modifier
@@ -510,7 +523,7 @@ private fun ExitDateInputPagerContent(
 
             OutlinedButton(
                 onClick = {
-                    if(state.value.isNotAssigned) {
+                    if(state.isNotAssigned) {
                         viewModel.showMessageForAssigningExitDate()
                         return@OutlinedButton
                     }
@@ -526,7 +539,7 @@ private fun ExitDateInputPagerContent(
                     .height(56.dp)
             ) {
 
-                val commentOrExitDate = state.value.exitDate?.toFormattedDate() ?: "퇴사 예정일 설정"
+                val commentOrExitDate = state.exitDate?.toLocalDate()?.toFormattedDate() ?: "퇴사 예정일 설정"
 
                 Text(
                     commentOrExitDate, style = MaterialTheme.typography.bodyMedium.copy(
@@ -548,7 +561,7 @@ private fun ExitDateInputPagerContent(
                 )
 
                 Checkbox(
-                    checked = state.value.isNotAssigned, onCheckedChange = {
+                    checked = state.isNotAssigned, onCheckedChange = {
                         viewModel.handleNotAssignedExitDate(it)
                     },
                     colors = CheckboxDefaults.colors(
@@ -593,7 +606,7 @@ private fun ExitDateInputPagerContent(
 @Composable
 private fun CompanyInputPagerContent(
     modifier: Modifier = Modifier,
-    company: String,
+    company: String?,
     companyChanged: (String) -> Unit,
     nextButtonClicked: () -> Unit
 ) {
@@ -671,7 +684,7 @@ private fun CompanyInputPagerContent(
                             }
                         }
                     },
-                value = company,
+                value = company ?: "",
                 onValueChange = companyChanged,
                 placeholder = {
                     Text(
@@ -714,7 +727,7 @@ private fun CompanyInputPagerContent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 disabledContainerColor = Color.LightGray
             ),
-            enabled = company.isNotBlank()) {
+            enabled = !company.isNullOrBlank()) {
             Text(
                 "다음", style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Start,
@@ -735,10 +748,11 @@ private fun ProfileSettingsContent(
     modifier: Modifier,
     pagerState: PagerState,
     navController: NavController,
-    viewModel: ProfileSettingsViewModel = hiltViewModel()
+    viewModel: ProfileSettingsViewModel,
+    authViewModel: AuthViewModel
 ) {
 
-    val state = viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
@@ -751,10 +765,11 @@ private fun ProfileSettingsContent(
         state = pagerState,
     ) { index ->
 
+
         when (index) {
             0 -> {
                 NameInputPagerContent(
-                    nickname = state.value.nickname,
+                    nickname = state.nickname,
                     nicknameChanged = {
                         viewModel.handleNickname(it)
                     },
@@ -767,7 +782,7 @@ private fun ProfileSettingsContent(
             }
 
             1 -> {
-                CompanyInputPagerContent(company = state.value.company, companyChanged = {
+                CompanyInputPagerContent(company = state.company, companyChanged = {
                     viewModel.handleCompany(it)
                 }, nextButtonClicked = {
                     coroutineScope.launch {
@@ -781,7 +796,9 @@ private fun ProfileSettingsContent(
                 ExitDateInputPagerContent(
                     modifier = Modifier.fillMaxSize(),
                     nextButtonClicked = {
-                        viewModel.goToHomeScreen(navController = navController)
+                        viewModel.updateUserInfo(navController = navController, updateCall = {
+                            authViewModel.updateUserInfo()
+                        })
                     }
                 )
             }

@@ -22,6 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        renderscriptTargetApi 33
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {
@@ -128,6 +131,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
 
+    //Accompanist-WebView
+    implementation "com.google.accompanist:accompanist-webview:$accompanist_version"
+
     //Kotlin Serialization
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
 
@@ -172,4 +178,19 @@ dependencies {
 
     //Coil Image
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    //플레이스토어 업데이트 확인용
+    implementation 'com.google.android.play:core:1.10.3'
+
+    //WebPage Link Preview
+    implementation 'com.github.lukasroberts:AndroidLinkView:1.0.1'
+
+    //Splash
+    implementation 'androidx.core:core-splashscreen:1.0.0-rc01'
+
+    //Coil
+    implementation "io.coil-kt:coil-compose:2.4.0"
+
+    //ReadMoreText
+    implementation "com.webtoonscorp.android:readmore-material:1.3.6"
 }
