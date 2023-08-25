@@ -241,8 +241,8 @@ fun ColorLetterFactory(viewModel: SelectLetterColorViewModel, index: Int = 0, on
     Letter(background = {},
         color= LetterColorList[index],
         modifier = Modifier
-            .size(61.dp, 135.dp)
-            .clickable(onClick = onCLick),
+            .size(61.dp, 135.dp),
+        clickable= true,
         onClick = onCLick
     )
 

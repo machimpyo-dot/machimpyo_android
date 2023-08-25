@@ -222,6 +222,7 @@ fun SelectLetterDesignScreen(
                         background = {
                             LetterBackground(id = selectedPattern)
                         },
+                        clickable= true,
                         onClick = {
                             viewModel.setPattern(selectedPattern)
                             select = true
