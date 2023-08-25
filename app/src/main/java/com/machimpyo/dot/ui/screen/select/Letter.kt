@@ -3,6 +3,10 @@ package com.machimpyo.dot.ui.screen.select
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,21 +14,18 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.machimpyo.dot.ui.theme.DotColor
@@ -33,18 +34,11 @@ import com.machimpyo.dot.utils.extension.LetterPatternList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull.content
 
-data class Letter(
-    var title: String = "",
-    var content: String = "",
-    var contentMaxLength: Int = 500,
-    var contentMaxLine: Int = 25,
-    var url: String = "",
-    val uuid: String = "",
-)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Letter(
+    clickable: Boolean = false,
+    isClickIndication: Boolean = true,
     onClick: () -> Unit = {},
     background: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -52,14 +46,23 @@ fun Letter(
     border: BorderStroke? = null,
     content: @Composable () -> Unit = {}
 ) {
+    val interactionSource = remember{MutableInteractionSource()}
+
     Card(
         modifier= modifier,
         shape = MaterialTheme.shapes.large.copy(CornerSize(5.dp)),
         colors = CardDefaults.cardColors(containerColor = color),
-        onClick = onClick,
         border = border
     ) {
-        Box(modifier = Modifier.fillMaxSize()){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                enabled = clickable,
+                onClick= onClick,
+                indication = if(isClickIndication) LocalIndication.current else null,
+                interactionSource = interactionSource,
+            )
+        ){
             background()
             content()
         }
@@ -97,7 +100,8 @@ fun LetterBackground(id: Int) {
 fun LetterTitle(
     title: String,
     hint: String,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String) -> Unit = {},
+    readOnly: Boolean = false
 ) {
     val dotTypo = LocalDotTypo.current
     
@@ -122,6 +126,7 @@ fun LetterTitle(
         modifier = Modifier
             .fillMaxWidth(),
         textStyle = textStyle,
+        readOnly = readOnly
     )
 }
 
@@ -129,9 +134,10 @@ fun LetterTitle(
 @Composable
 fun LetterContent(
     content: String,
-    maxLine: Int,
+//    maxLine: Int,
     hint: String,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String) -> Unit = {},
+    readOnly: Boolean = false
 ) {
     val dotTypo = LocalDotTypo.current
 
@@ -146,7 +152,7 @@ fun LetterContent(
 
         onValueChange = onValueChange,
 
-        maxLines = maxLine,
+//        maxLines = maxLine,
 
         //hint
         decorationBox = { innerTextField ->
@@ -172,6 +178,8 @@ fun LetterContent(
                 }
             },
         textStyle = textStyle,
+
+        readOnly = readOnly
     )
 }
 
