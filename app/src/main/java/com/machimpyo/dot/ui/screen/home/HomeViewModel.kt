@@ -111,7 +111,7 @@ class HomeViewModel @Inject constructor(
         val nickname: String? = null,
         val abstractLetters: List<AbstractLetter> = emptyList(),
         val company: String? = null,
-        val contents: List<HomeContent> = emptyList(),
+        val contents: List<HomeContent> = getMockHomeContents(),
     )
 
 

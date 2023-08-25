@@ -33,6 +33,7 @@ import com.machimpyo.dot.navigation.ROUTE_MY_PAGE
 import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
+import com.machimpyo.dot.utils.ThemeHelper
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -89,7 +90,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         initAppUpdateSettings()
-
+        setupThemeMode()
         setContent {
 
             val navHostController = rememberAnimatedNavController()
@@ -98,7 +99,7 @@ class MainActivity : ComponentActivity() {
 
             val userState by authViewModel.userState.collectAsState()
 
-            LaunchedEffect(Unit) {//TODO 삭제
+            LaunchedEffect(Unit) {
 //                authViewModel.logOut()
             }
 
@@ -111,16 +112,16 @@ class MainActivity : ComponentActivity() {
 
                     AppNavHost(
                         navController = navHostController,
-                        startDestination =
-                        if(userState.user == null) ROUTE_LOGIN
-                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
-                        //이때 uid로 동일 사용자인지 구분할 필요 있음
-                        //datastore 고려해보고 있음
-                        else if(userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
-                            ROUTE_HOME
-                        }
-                        //else if (userState.isDynamicLink) ROUTE_LETTER_CHECK
-                        else ROUTE_PROFILE_SETTINGS
+                        startDestination = ROUTE_HOME
+//                        if(userState.user == null) ROUTE_LOGIN
+//                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
+//                        //이때 uid로 동일 사용자인지 구분할 필요 있음
+//                        //datastore 고려해보고 있음
+//                        else if(userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
+//                            ROUTE_HOME
+//                        }
+//                        //else if (userState.isDynamicLink) ROUTE_LETTER_CHECK
+//                        else ROUTE_PROFILE_SETTINGS
                         ,
                         authViewModel = authViewModel
                     )
@@ -138,6 +139,10 @@ class MainActivity : ComponentActivity() {
 
         }
 
+    }
+
+    private fun setupThemeMode() {
+        ThemeHelper.applyTheme(ThemeHelper.ThemeMode.LIGHT)
     }
 
     @Deprecated("Deprecated in Java", ReplaceWith(
