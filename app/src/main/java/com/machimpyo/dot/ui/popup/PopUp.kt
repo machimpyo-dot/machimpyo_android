@@ -42,7 +42,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.machimpyo.dot.R
 import com.machimpyo.dot.ui.theme.DotColor
-import com.machimpyo.dot.ui.theme.dotTypo
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +61,7 @@ fun MainDialog(
         onDismissRequest = { /*TODO*/ },
         properties = dialogProperties,
     ){
+        val dotTypo = LocalDotTypo.current
 
 
         ConstraintLayout(
@@ -118,7 +119,7 @@ fun MainDialog(
                 mainText?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.dotTypo.labelLarge.copy(
+                        style = dotTypo.labelLarge.copy(
                             fontSize = 21.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign= TextAlign.Center ,
@@ -153,6 +154,8 @@ fun MainDialog(
 @Preview (showSystemUi = true)
 @Composable
 fun Preview() {
+    val dotTypo = LocalDotTypo.current
+
     MainDialog(
         mainText = "선택완료",
         mainIcon = painterResource(id = R.drawable.check),
@@ -168,7 +171,7 @@ fun Preview() {
             ) {
                 Text(
                     text = "확인",
-                    style = MaterialTheme.dotTypo.labelMedium.copy(
+                    style = dotTypo.labelMedium.copy(
                         fontWeight= FontWeight.SemiBold,
                         textAlign= TextAlign.Center ,
                         lineHeightStyle = LineHeightStyle(
@@ -238,6 +241,9 @@ fun SelectButton(
     onClick: () -> Unit = {},
     isCrucial: Boolean = false,
 ) {
+
+    val dotTypo = LocalDotTypo.current
+
     Button(
         modifier= Modifier
             .fillMaxWidth()
@@ -249,7 +255,7 @@ fun SelectButton(
         onClick = onClick) {
         Text(
             text = text,
-            style = MaterialTheme.dotTypo.labelMedium.copy(
+            style = dotTypo.labelMedium.copy(
                 color = if(isCrucial) DotColor.primaryColor else Color.Black,
                 fontWeight = if(isCrucial) FontWeight.SemiBold else FontWeight.Medium,
                 textAlign= TextAlign.Center ,

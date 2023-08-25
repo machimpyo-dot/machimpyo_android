@@ -35,7 +35,6 @@ import androidx.navigation.NavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
-import com.machimpyo.dot.ui.theme.dotTypo
 import com.machimpyo.dot.utils.extension.LetterColorList
 import com.machimpyo.dot.utils.extension.TextImportance
 import com.machimpyo.dot.utils.extension.TextList
@@ -130,7 +129,7 @@ fun SelectLetterColorScreen(
             ) {
                 BackgroundText(
                     text = backgroundTextList,
-                    style= MaterialTheme.dotTypo.displayMedium.copy(
+                    style= dotTypo.displayMedium.copy(
                         fontSize = 52.sp
                     )
                 )
@@ -140,7 +139,7 @@ fun SelectLetterColorScreen(
                 val question: String = "원하는 편지지 색을 골라주세요!"
 
                 Text(text = question,
-                    style = MaterialTheme.dotTypo.bodyMedium,
+                    style = dotTypo.bodyMedium,
                     color = Color.White)
             }
 
@@ -192,7 +191,8 @@ fun BackgroundContent(
 @Composable
 fun BackgroundText(
     text: TextList,
-    style: TextStyle = MaterialTheme.dotTypo.displayMedium,
+    style: TextStyle,
 ) {
+
     text.textToComposable(style = style)
 }

@@ -14,12 +14,7 @@ import com.machimpyo.dot.BuildConfig
 import com.machimpyo.dot.navigation.ROUTE_HOME
 import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.repository.MainRepository
-import com.machimpyo.dot.service.AndroidArgumentDynamicLink
-import com.machimpyo.dot.service.DotDynamicLink
-import com.machimpyo.dot.service.FirebaseDeepLinkService
-import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.screen.select.Letter
-import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,35 +31,35 @@ class LetterWriteViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
     fun send() {
-        state.value.letter.copy(
-//            uuid = repository.getUUID()
-        )
-
-        val link = Link(
-            url= DOMAIN_URI_PREFIX,
-            nav = ROUTE_LETTER_CHECK,
-            uuid = state.value.letter.uuid,
-        )
-        Log.i("DYNAMIC_LINK", "1link: ${link.toString()}")
-
-        val androidArgumentDynamicLink = AndroidArgumentDynamicLink(
-            apn = BuildConfig.APPLICATION_ID,
-            amv = BuildConfig.VERSION_CODE,
-        )
-        Log.i("DYNAMIC_LINK", "androidArgumentDynamicLink: ${androidArgumentDynamicLink.toString()}")
-
-
-        val dynamicLink = DotDynamicLink(
-            link = link,
-            androidArgumentDynamicLink = androidArgumentDynamicLink
-        )
-
-        viewModelScope.async {
-            state.value.letter.url = FirebaseDeepLinkService.makeDynamicLink(
-                callback = { setDeepLinkUrl(it) },
-                dynamicLink= dynamicLink
-            ).toString()
-        }
+//        state.value.letter.copy(
+////            uuid = repository.getUUID()
+//        )
+//
+//        val link = Link(
+//            url= DOMAIN_URI_PREFIX,
+//            nav = ROUTE_LETTER_CHECK,
+//            uuid = state.value.letter.uuid,
+//        )
+//        Log.i("DYNAMIC_LINK", "1link: ${link.toString()}")
+//
+//        val androidArgumentDynamicLink = AndroidArgumentDynamicLink(
+//            apn = BuildConfig.APPLICATION_ID,
+//            amv = BuildConfig.VERSION_CODE,
+//        )
+//        Log.i("DYNAMIC_LINK", "androidArgumentDynamicLink: ${androidArgumentDynamicLink.toString()}")
+//
+//
+//        val dynamicLink = DotDynamicLink(
+//            link = link,
+//            androidArgumentDynamicLink = androidArgumentDynamicLink
+//        )
+//
+//        viewModelScope.async {
+//            state.value.letter.url = FirebaseDeepLinkService.makeDynamicLink(
+//                callback = { setDeepLinkUrl(it) },
+//                dynamicLink= dynamicLink
+//            ).toString()
+//        }
 
     }
 

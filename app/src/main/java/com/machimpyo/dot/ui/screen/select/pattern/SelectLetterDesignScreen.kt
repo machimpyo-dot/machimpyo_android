@@ -56,7 +56,7 @@ import com.machimpyo.dot.ui.screen.select.LetterBackground
 import com.machimpyo.dot.ui.screen.select.color.BackgroundContent
 import com.machimpyo.dot.ui.screen.select.color.BackgroundText
 import com.machimpyo.dot.ui.theme.DotColor
-import com.machimpyo.dot.ui.theme.dotTypo
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.topappbar.Back
 import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
 import com.machimpyo.dot.utils.extension.LetterColorList
@@ -96,7 +96,9 @@ fun SelectLetterDesignScreen(
     )
 
     val selectedLetterState by remember{ mutableStateOf(false)}
-    
+
+    val dotTypo = LocalDotTypo.current
+
     val backgroundTextList = TextList(
         normalTextColor = Color.Black
     ).apply {
@@ -246,7 +248,7 @@ fun SelectLetterDesignScreen(
 
                 BackgroundText(
                     text = backgroundTextList,
-                    style = MaterialTheme.dotTypo.displayMedium.copy(
+                    style = dotTypo.displayMedium.copy(
                         fontSize = 22.sp
                     )
                 )
@@ -256,7 +258,7 @@ fun SelectLetterDesignScreen(
                 val question: String = "편지지 디자인을 골라주세요!"
                 Text(
                     text = question,
-                    style = MaterialTheme.dotTypo.bodyMedium,
+                    style = dotTypo.bodyMedium,
                     color = Color.Black
                 )
 
@@ -311,6 +313,8 @@ fun LetterDesignList(letterColor: Color, patternSize: Int) {
 
 @Composable
 fun LetterSelectedPopup(visible: Boolean, onClick: () -> Unit = {}) {
+    val dotTypo = LocalDotTypo.current
+
     AnimatedVisibility(visible = visible) {
 
         MainDialog(
@@ -328,7 +332,7 @@ fun LetterSelectedPopup(visible: Boolean, onClick: () -> Unit = {}) {
                 ) {
                     Text(
                         text = "확인",
-                        style = MaterialTheme.dotTypo.labelMedium.copy(
+                        style = dotTypo.labelMedium.copy(
                             fontWeight= FontWeight.SemiBold,
                             lineHeightStyle = LineHeightStyle(
                                 alignment = LineHeightStyle.Alignment.Center,

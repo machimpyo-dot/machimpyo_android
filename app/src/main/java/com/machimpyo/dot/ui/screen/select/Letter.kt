@@ -27,12 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
-import com.machimpyo.dot.ui.screen.select.pattern.findSVGUrlFromId
 import com.machimpyo.dot.ui.theme.DotColor
-import com.machimpyo.dot.ui.theme.dotTypo
+import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.utils.extension.LetterPatternList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull.content
@@ -103,7 +99,9 @@ fun LetterTitle(
     hint: String,
     onValueChange: (String) -> Unit,
 ) {
-    val textStyle = MaterialTheme.dotTypo.headlineLarge
+    val dotTypo = LocalDotTypo.current
+    
+    val textStyle = dotTypo.headlineLarge
 
     BasicTextField(
         value = title,
@@ -135,7 +133,9 @@ fun LetterContent(
     hint: String,
     onValueChange: (String) -> Unit,
 ) {
-    val textStyle = MaterialTheme.dotTypo.bodyMedium
+    val dotTypo = LocalDotTypo.current
+
+    val textStyle = dotTypo.bodyMedium
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()
@@ -177,10 +177,12 @@ fun LetterContent(
 
 @Composable
 fun LetterTextRemain(now: Int, max: Int, modifier:Modifier = Modifier) {
+    val dotTypo = LocalDotTypo.current
+
     Text(
         text = "${now} / ${max}",
 
         modifier= modifier,
-        style = MaterialTheme.dotTypo.bodySmall
+        style = dotTypo.bodySmall
     )
 }
