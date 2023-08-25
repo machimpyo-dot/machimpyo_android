@@ -3,9 +3,9 @@ package com.machimpyo.dot.ui.screen.letter.write
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumTouchTargetEnforcement
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -47,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -121,7 +121,7 @@ fun LetterWriteScreen(
             send = false
             viewModel.goToHomeScreen()
         },
-        url= state.letter.url
+        url= state.letter.url!!
     )
 
     LaunchedEffect(viewModel) {
@@ -202,43 +202,44 @@ fun LetterWriteScreen(
             ) {
 
             Letter(
-                modifier= Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(ratio = 18 / 40f),
-                background ={ LetterBackground(id = state.selectedPattern)},
-                color = LetterColorList[state.selectedColor]
-            ) {
+                background = { LetterBackground(id = state.selectedPattern) },
+                color = LetterColorList[state.selectedColor],
+                clickable = true,
+                isClickIndication = false,
+                ) {
                 Column(
                     modifier = Modifier
                         .padding(20.dp),
                 ) {
-                    Spacer(modifier= Modifier.height(50.dp))
-
-                    var remain by remember {
-                        mutableStateOf("${state.letter.content.length} / ${state.letter.contentMaxLength}")
-                    }
+                    Spacer(modifier = Modifier.height(50.dp))
 
                     LetterTitle(
                         title = state.letter.title,
-                        hint= "사장님께",
+                        hint = "사장님께",
                         onValueChange = viewModel::titleValueChange
                     )
 
-                    Spacer(modifier= Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     LetterContent(
-                        content = state.letter.content,
-                        maxLine = state.letter.contentMaxLine,
+                        content = state.letter.contents,
+//                        maxLine = state.letterConfig.contentMaxLine,
                         hint = "그동안 감사했습니다...",
                         onValueChange = viewModel::contentValueChange
                     )
 
-                    Spacer(modifier= Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    LetterTextRemain(now = state.letter.content.length, max = state.letter.contentMaxLength,
-                        modifier= Modifier
+                    LetterTextRemain(
+                        now = state.letter.contents.length,
+                        max = state.letterConfig.contentMaxLength,
+                        modifier = Modifier
                             .wrapContentSize()
-                            .align(Alignment.End))
+                            .align(Alignment.End)
+                    )
                 }
 
             }
