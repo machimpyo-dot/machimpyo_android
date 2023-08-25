@@ -35,6 +35,8 @@ import androidx.navigation.NavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
+import com.machimpyo.dot.ui.topappbar.Back
+import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
 import com.machimpyo.dot.utils.extension.LetterColorList
 import com.machimpyo.dot.utils.extension.TextImportance
 import com.machimpyo.dot.utils.extension.TextList
@@ -92,11 +94,17 @@ fun SelectLetterColorScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-//        topBar = {
-//            CenterAlignedTopAppBar(title = {
-//                Text("편지색상고르기화면")
-//            })
-//        },
+        topBar = {
+            LogoCenteredTopAppBar(
+                navigation = {
+                    Back(
+                        onCLick = {
+                            navController.popBackStack()
+                        }
+                    )
+                },
+            )
+        },
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState
