@@ -14,13 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Machimpyo"
         android:name=".DotApplication"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.Machimpyo">
+            android:theme="@style/AppTheme.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

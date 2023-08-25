@@ -6,10 +6,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import com.machimpyo.dot.data.model.request.KakaoAccessToken
+import com.machimpyo.dot.data.model.response.UserInfo
 import com.machimpyo.dot.network.service.MainService
 import com.machimpyo.dot.repository.AuthRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,16 +21,62 @@ class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val kakaoAuth: UserApiClient,
     private val mainService: MainService,
-    @ApplicationContext private val context: Context
-): AuthRepository {
+//    @ActivityContext private val context: Context
+) : AuthRepository {
 
     override val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
 
-    override suspend fun signInWithKakao(callback: (Result<FirebaseUser>) -> Unit) {
+    override suspend fun getUserInfo(): Result<UserInfo> {
+        return try {
+            val response = mainService.getUserInfo()
+            if (!response.isSuccessful) {
+                throw Exception("유저 정보 가져오기 실패")
+            }
+
+            val userInfo = response.body() ?: throw Exception("유저 정보 가져오기 실패")
+
+            Result.success(userInfo)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun createFirebaseCustomTokenAndSignIn(
+        token: OAuthToken,
+        callback: (Result<FirebaseUser>) -> Unit
+    ) {
+        try {
+            val kakaoAccessToken = KakaoAccessToken(token.accessToken)
+
+            val response = mainService.createCustomToken(kakaoAccessToken)
+
+            if (!response.isSuccessful) {
+                throw Exception("파이어베이스 커스텀 토큰 생성 오류")
+            }
+
+            val result = response.body() ?: throw Exception("파이어베이스 커스텀 토큰 생성 오류")
+
+            firebaseAuth.signInWithCustomToken(result.customToken).addOnSuccessListener {
+                it.user?.let { user ->
+                    callback(Result.success(user))
+                } ?: callback(Result.failure(Exception("user is null")))
+            }.addOnFailureListener {
+                callback(Result.failure(it))
+            }
+
+        } catch (e: Exception) {
+            callback(Result.failure(e))
+        }
+    }
+
+    override suspend fun signInWithKakao(
+        context: Context,
+        callback: (Result<FirebaseUser>) -> Unit
+    ) {
         try {
             Log.e("TAG", "레포지토리 옴!!!")
-            if(kakaoAuth.isKakaoTalkLoginAvailable(context)) {
+            if (kakaoAuth.isKakaoTalkLoginAvailable(context)) {
                 //카카오톡이 설치되어있는 경우
                 kakaoAuth.loginWithKakaoTalk(context) { token, error ->
                     error?.let {
@@ -35,16 +84,13 @@ class AuthRepositoryImpl @Inject constructor(
                         return@loginWithKakaoTalk
                     }
 
-                    token?.apply {
-                        accessToken //액세스 토큰
-                        idToken //아이디 토큰
-                        refreshToken //리프래시 토큰
-                        //위의 정보를 가지고 서버에 커스텀 토큰 생성 요청
+                    if (token == null) {
+                        callback(Result.failure(Exception("카카오 토큰 생성 오류")))
+                        return@loginWithKakaoTalk
+                    }
 
-                        //firebaseAuth.signInWithCustomToken()
-
-                        //TODO(아래 코드 삭제해야함 )
-                        firebaseAuth.signInAnonymously()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        createFirebaseCustomTokenAndSignIn(token, callback)
                     }
                 }
 
@@ -56,16 +102,14 @@ class AuthRepositoryImpl @Inject constructor(
                         return@loginWithKakaoAccount
                     }
 
-                    token?.apply {
-                        accessToken //액세스 토큰
-                        idToken //아이디 토큰
-                        refreshToken //리프래시 토큰
-                        //위의 정보를 가지고 서버에 커스텀 토큰 생성 요청
-
-                        //firebaseAuth.signInWithCustomToken()
-                        firebaseAuth.signInAnonymously()
+                    if (token == null) {
+                        callback(Result.failure(Exception("카카오 토큰 생성 오류")))
+                        return@loginWithKakaoAccount
                     }
 
+                    CoroutineScope(Dispatchers.IO).launch {
+                        createFirebaseCustomTokenAndSignIn(token, callback)
+                    }
 
                 }
             }

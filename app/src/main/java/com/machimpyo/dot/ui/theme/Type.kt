@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.sp
 import com.machimpyo.dot.R
 import org.w3c.dom.Text
 
-private val pressStart2P = FontFamily(
+val pressStart2P = FontFamily(
     Font(R.font.press_start_2p, FontWeight.Normal, FontStyle.Normal)
 )
-private val pretendard = FontFamily(
+val pretendard = FontFamily(
     Font(R.font.pretendard_black, FontWeight.Black),
     Font(R.font.pretendard_bold, FontWeight.Bold),
     Font(R.font.pretendard_extrabold, FontWeight.ExtraBold),
@@ -32,7 +32,7 @@ private val pretendard = FontFamily(
 
 val LocalDotTypo = compositionLocalOf { Typography }
 
-val MaterialTheme.dotTypo: Typography
+val MaterialTheme.typography: Typography
     @Composable
     @ReadOnlyComposable
     get() = LocalDotTypo.current
@@ -43,6 +43,12 @@ val Typography = Typography(
         fontFamily = pressStart2P,
         fontWeight = FontWeight.Normal,
         fontSize = 52.sp,
+        letterSpacing = (-1.2).sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = pretendard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 36.sp,
         letterSpacing = (-1.2).sp
     ),
     headlineLarge = TextStyle(
@@ -74,6 +80,6 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         letterSpacing = (-1.2).sp
-    )
+    ),
 
 )
