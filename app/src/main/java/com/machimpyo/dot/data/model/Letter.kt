@@ -11,8 +11,9 @@ data class Letter(
     val contents: String,
     val uid: Long,
     val profileUrl: String?,
-    val nickname: String
-) {
+    val nickname: String,
+    var url: String?,
+    ) {
     companion object {
         fun getMock(): Letter {
             val title = String.randomText()
@@ -25,11 +26,17 @@ data class Letter(
                 contents = contents,
                 uid = uid,
                 profileUrl = profileUrl,
-                nickname = nickname
+                nickname = nickname,
+                url = null
             )
         }
     }
 }
+
+data class LetterConfig(
+    val contentMaxLength: Int = 500,
+    val contentMaxLine: Int = 25,
+)
 
 data class Talk(
     val myTalk: Letter,
