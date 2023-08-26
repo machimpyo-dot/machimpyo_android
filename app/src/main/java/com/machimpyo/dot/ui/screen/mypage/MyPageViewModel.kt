@@ -52,6 +52,7 @@ class MyPageViewModel @Inject constructor(
 
     fun updateCompanyImage(currentPage: Int?, uri: Uri?) = viewModelScope.launch(Dispatchers.IO) {
         currentPage ?: return@launch
+
         uri ?: return@launch
         if(state.value.letterBoxItems.isEmpty()) return@launch
         val currentLetterBoxItem = state.value.letterBoxItems.getOrNull(currentPage) ?: return@launch
@@ -63,7 +64,7 @@ class MyPageViewModel @Inject constructor(
             if(it.company.uid == currentCompany.uid) {
                 it.copy(
                     company = currentCompany.copy(
-                        photoUrl = uri.path
+                        photoUrl = uri
                     )
                 )
             } else {
@@ -77,8 +78,6 @@ class MyPageViewModel @Inject constructor(
             )
         }
 
-
-        Log.e("TAG","회사 이미지 업로드, 현재 회사 이름: ${currentCompany.name}, Uri: $uri")
     }
 
     fun goToLetterCheckScreen(letterUid: Long) = viewModelScope.launch {

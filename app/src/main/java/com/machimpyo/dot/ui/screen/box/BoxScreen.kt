@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.screen.box
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
@@ -44,7 +45,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -87,6 +90,14 @@ fun BoxScreen(
     val state = viewModel?.state?.collectAsState()
 
     val dotTypo = LocalDotTypo.current
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("box.json"))
+
+    val lottieState = animateLottieCompositionAsState(
+        composition,
+        iterations = 1,
+        speed = 0.8f
+    )
 
     if (viewModel != null) {
         LaunchedEffect(viewModel) {
@@ -146,12 +157,7 @@ fun BoxScreen(
         })
     }) { innerPadding ->
 
-        val composition by rememberLottieComposition(LottieCompositionSpec.Asset("box.json"))
-        val lottieState = animateLottieCompositionAsState(
-            composition,
-            iterations = 1,
-            speed = 0.8f
-        )
+
 
         Box(
             modifier = Modifier
@@ -161,11 +167,12 @@ fun BoxScreen(
 
             LottieAnimation(
                 composition = composition,
-                progress = { lottieState.progress },
+                progress = {
+                    lottieState.progress
+                },
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(200.dp)
-
             )
 
             AnimatedVisibility(
@@ -223,48 +230,46 @@ fun BoxScreen(
                     state?.value?.letterNames?.let { letterNames ->
                         items(letterNames) { letterName ->
 
-                            val clickModifier = if(letterName.letterUid != null) {
-                                Modifier.tagCloudItemFade()
-                                    .tagCloudItemScaleDown()
+                            Box(
+                                modifier = Modifier
                                     .clickable {
-                                        viewModel.goToLetterCheckScreen()
+                                        viewModel.goToLetterCheckScreen(letterName.letterUid)
                                     }
-                            } else {
-                                Modifier.tagCloudItemFade()
-                                    .tagCloudItemScaleDown()
-                                    .clickable {
-                                        //TODO - 할수도 안 할 수도
-                                    }
-                            }
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = clickModifier
-
+                                    .tagCloudItemFade()
+                                    .tagCloudItemScaleDown(),
+                                contentAlignment = Alignment.Center
                             ) {
-
-                                val color = if(letterName.letterUid == null) Color.Black else DotColor.primaryColor
-
-                                Box(
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                        .size(16.dp)
-                                        .background(color = color)
-                                )
 
-                                if (letterName.letterUid != null) {
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                ) {
 
-                                    Text(
-                                        letterName.nickName ?: "",
-                                        style = dotTypo.bodyMedium.copy(
-                                            color = color,
-                                            fontWeight = FontWeight.Normal
-                                        )
+                                    val color =
+                                        if (letterName.letterUid == null) Color.Black else DotColor.primaryColor
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .background(color = color)
                                     )
-                                }
 
+                                    if (letterName.letterUid != null) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        Text(
+                                            letterName.nickName ?: "",
+                                            style = dotTypo.bodyMedium.copy(
+                                                color = color,
+                                                fontWeight = FontWeight.Normal
+                                            )
+                                        )
+                                    }
+
+                                }
                             }
+
                         }
                     }
 

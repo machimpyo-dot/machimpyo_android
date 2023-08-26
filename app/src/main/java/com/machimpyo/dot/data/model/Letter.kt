@@ -65,7 +65,7 @@ data class Company(
     val uid: String,
     val exitDate: LocalDate?,
     val recentLetterContents: String?,
-    val photoUrl: String?
+    val photoUrl: Any?
 ) {
     companion object {
         fun getMock(): Company {
