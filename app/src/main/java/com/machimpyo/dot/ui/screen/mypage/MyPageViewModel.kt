@@ -10,6 +10,7 @@ import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machimpyo.dot.data.model.LetterBoxItem
+import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -78,6 +79,14 @@ class MyPageViewModel @Inject constructor(
 
 
         Log.e("TAG","회사 이미지 업로드, 현재 회사 이름: ${currentCompany.name}, Uri: $uri")
+    }
+
+    fun goToLetterCheckScreen(letterUid: Long) = viewModelScope.launch {
+        _effect.emit(
+            Effect.NavigateTo(
+                "$ROUTE_LETTER_CHECK/$letterUid"
+            )
+        )
     }
 
     data class State(

@@ -897,6 +897,10 @@ fun MyPageScreen(
                                                         bottomEnd = 10.dp
                                                     )
                                                 )
+                                                .clickable {
+                                                    val letterUid = talk.myTalk.uid
+                                                    viewModel.goToLetterCheckScreen(letterUid)
+                                                }
                                                 .padding(horizontal = 16.dp, vertical = 24.dp),
                                             verticalArrangement = Arrangement.Center,
                                             horizontalAlignment = Alignment.CenterHorizontally
@@ -943,7 +947,7 @@ fun MyPageScreen(
                                                 style = dotTypo.bodyMedium.copy(
                                                     color = Color.Black,
                                                     fontWeight = FontWeight.Medium
-                                                )
+                                                ),
                                             )
                                         }
 
@@ -972,6 +976,10 @@ fun MyPageScreen(
                                                             bottomEnd = 0.dp
                                                         )
                                                     )
+                                                    .clickable {
+                                                        val letterUid = replyTalk.uid
+                                                        viewModel.goToLetterCheckScreen(letterUid)
+                                                    }
                                                     .padding(horizontal = 16.dp, vertical = 24.dp),
                                                 verticalArrangement = Arrangement.Center,
                                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -1019,7 +1027,7 @@ fun MyPageScreen(
                                                         color = Color.White,
                                                         fontWeight = FontWeight.Medium
                                                     ),
-                                                    fontSize = 16.sp
+                                                    fontSize = 16.sp,
                                                 )
 
 
