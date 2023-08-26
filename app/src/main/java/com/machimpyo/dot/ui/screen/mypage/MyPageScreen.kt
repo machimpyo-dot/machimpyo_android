@@ -1,6 +1,7 @@
 package com.machimpyo.dot.ui.screen.mypage
 
 import android.net.Uri
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -126,6 +127,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -139,6 +141,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
@@ -154,133 +158,10 @@ import com.machimpyo.dot.utils.extension.random
 import com.machimpyo.dot.utils.extension.toFormattedDate
 import com.webtoonscorp.android.readmore.material.ReadMoreText
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.Contract
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
-
-//@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
-//@Preview
-//@Composable
-//private fun BottomSheetPreview() {
-//
-//    val snackbarHostState = remember {
-//        SnackbarHostState()
-//    }
-//
-//    val bottomSheetState: BottomSheetState = rememberBottomSheetState(
-//        initialValue = BottomSheetValue.Collapsed,
-//        animationSpec = tween(
-//            durationMillis = 500,
-//            delayMillis = 50,
-//        ),
-//    )
-//
-//    val scaffoldState = rememberBottomSheetScaffoldState(
-//        bottomSheetState = bottomSheetState,
-//        snackbarHostState = snackbarHostState
-//    )
-//
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    val configuration = LocalConfiguration.current
-//
-//    var selectedImageUri by remember {
-//        // It won't work with mutableStateListOf
-//        mutableStateOf<Uri?>(null)
-//    }
-//
-//    val photoPickerLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickVisualMedia(),
-//        onResult = { selectedImageUri = it }
-//    )
-//
-//    BottomSheetScaffold(
-//        sheetContent = {
-//            Box(
-//                modifier = Modifier
-//                    .background(
-//                        color = Color.random()
-//                    )
-//                    .fillMaxWidth()
-//                    .height(configuration.screenHeightDp.div(2).dp),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                LazyColumn {
-//                    item {
-//                        Button(
-//                            onClick = {
-//                                multiplePhotoPickerLauncher.launch(
-//                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-//                                )
-//                            }
-//                        ) {
-//                            Text(text = "Pick multiple photo")
-//                        }
-//                    }
-//
-//                    items(selectedImageUris) { uri ->
-//                        AsyncImage(
-//                            model = uri,
-//                            contentDescription = null,
-//                            modifier = Modifier.fillMaxWidth(),
-//                            contentScale = ContentScale.Crop
-//                        )
-//                    }
-//                }
-//            }
-//        },
-//        sheetShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-//        sheetPeekHeight = 0.dp,
-//        scaffoldState = scaffoldState,
-//        sheetElevation = 30.dp,
-//        sheetGesturesEnabled = false
-//    ) { innerPadding ->
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .pointerInput(Unit) {
-//                    detectTapGestures(
-//                        onTap = {
-//                            if (bottomSheetState.isExpanded) {
-//                                coroutineScope.launch {
-//                                    bottomSheetState.collapse()
-//                                }
-//                            }
-//                        }
-//                    )
-//                }
-//                .padding(innerPadding)
-//                .background(color = Color.random()),
-//            verticalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterVertically),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text(
-//                "본문 부분", style = MaterialTheme.typography.displayLarge.copy(
-//                    color = Color.White,
-//                    fontWeight = FontWeight.Bold
-//                )
-//            )
-//
-//            ElevatedButton(
-//                onClick = {
-//                    coroutineScope.launch {
-//                        with(bottomSheetState) {
-//                            if (isCollapsed) {
-//                                expand()
-//                            } else {
-//                                collapse()
-//                            }
-//                        }
-//                    }
-//                }
-//            ) {
-//                Text("바텀 시트 열기")
-//            }
-//        }
-//    }
-//
-//
-//}
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class,
@@ -319,10 +200,13 @@ fun MyPageScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { viewModel.updateCompanyImage(currentPage,it) }
+        onResult = { uri ->
+            uri?.let {
+                viewModel.updateCompanyImage(currentPage, it)
+            }
+        }
     )
 
     LaunchedEffect(pagerState.currentPage) {
@@ -525,9 +409,7 @@ fun MyPageScreen(
                                             .size(100.dp)
                                     ) {
 
-                                        state.letterBoxItems.getOrNull(page)?.company?.photoUrl.let { photoUrl->
-
-                                            //TODO - Uri 인지 Url 인지 따라 구분해서 되는지
+                                        state.letterBoxItems.getOrNull(page)?.company?.photoUrl.let { photoUrl ->
 
                                             AsyncImage(
                                                 model = photoUrl,
@@ -771,14 +653,18 @@ fun MyPageScreen(
                                 )
                         ) {
 
-                            Image(
-                                painter = painterResource(id = R.drawable.pic),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(topBarHeight),
-                            )
+                            currentPage?.let {
+                                state.letterBoxItems.getOrNull(it)?.company?.photoUrl?.let { photoUrl ->
+                                    AsyncImage(
+                                        model = photoUrl,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(topBarHeight),
+                                    )
+                                }
+                            }
 
                             Column(
                                 modifier = Modifier

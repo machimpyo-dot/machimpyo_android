@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.screen.box
 
+import android.util.Log
 import androidx.navigation.NavOptionsBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -8,6 +9,7 @@ import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machimpyo.dot.data.model.LetterName
+import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.navigation.ROUTE_MY_PAGE
 import com.machimpyo.dot.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
@@ -68,8 +70,13 @@ class BoxViewModel @Inject constructor(
         )
     }
 
-    fun goToLetterCheckScreen() = viewModelScope.launch {
-        //TODO - 나중에 나경님이랑 같이 추가
+    fun goToLetterCheckScreen(letterUid: Long?) = viewModelScope.launch {
+        letterUid?: return@launch
+        _effect.emit(
+            Effect.NavigateTo(
+                "$ROUTE_LETTER_CHECK/$letterUid"
+            )
+        )
     }
 
     data class State(
