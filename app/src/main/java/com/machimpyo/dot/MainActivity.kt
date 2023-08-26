@@ -31,6 +31,7 @@ import com.machimpyo.dot.navigation.ROUTE_HOME
 import com.machimpyo.dot.navigation.ROUTE_LOGIN
 import com.machimpyo.dot.navigation.ROUTE_MY_PAGE
 import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
+import com.machimpyo.dot.service.FirebaseDeepLinkService
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
 import com.machimpyo.dot.utils.ThemeHelper
@@ -88,6 +89,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseDeepLinkService.openDynamicLink(intent)
         installSplashScreen()
         initAppUpdateSettings()
         setupThemeMode()
