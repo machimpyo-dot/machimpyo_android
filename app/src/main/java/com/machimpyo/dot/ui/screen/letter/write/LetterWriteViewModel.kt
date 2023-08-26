@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.screen.letter.write
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavOptionsBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,11 +9,19 @@ import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.machimpyo.dot.BuildConfig
 import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterConfig
 import com.machimpyo.dot.navigation.ROUTE_HOME
+import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.repository.MainRepository
+import com.machimpyo.dot.service.AndroidArgumentDynamicLink
+import com.machimpyo.dot.service.DotDynamicLink
+import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.screen.select.Letter
+import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -29,35 +38,35 @@ class LetterWriteViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
     fun send() {
-//        state.value.letter.copy(
-////            uuid = repository.getUUID()
-//        )
-//
-//        val link = Link(
-//            url= DOMAIN_URI_PREFIX,
-//            nav = ROUTE_LETTER_CHECK,
-//            uuid = state.value.letter.uuid,
-//        )
-//        Log.i("DYNAMIC_LINK", "1link: ${link.toString()}")
-//
-//        val androidArgumentDynamicLink = AndroidArgumentDynamicLink(
-//            apn = BuildConfig.APPLICATION_ID,
-//            amv = BuildConfig.VERSION_CODE,
-//        )
-//        Log.i("DYNAMIC_LINK", "androidArgumentDynamicLink: ${androidArgumentDynamicLink.toString()}")
-//
-//
-//        val dynamicLink = DotDynamicLink(
-//            link = link,
-//            androidArgumentDynamicLink = androidArgumentDynamicLink
-//        )
-//
-//        viewModelScope.async {
-//            state.value.letter.url = FirebaseDeepLinkService.makeDynamicLink(
-//                callback = { setDeepLinkUrl(it) },
-//                dynamicLink= dynamicLink
-//            ).toString()
-//        }
+        state.value.letter.copy(
+//            uid = repository.getUUID()
+        )
+
+        val link = Link(
+            url= DOMAIN_URI_PREFIX,
+            nav = ROUTE_LETTER_CHECK,
+            uid = state.value.letter.uid.toString(),
+        )
+        Log.i("DYNAMIC_LINK", "1link: ${link.toString()}")
+
+        val androidArgumentDynamicLink = AndroidArgumentDynamicLink(
+            apn = BuildConfig.APPLICATION_ID,
+            amv = BuildConfig.VERSION_CODE,
+        )
+        Log.i("DYNAMIC_LINK", "androidArgumentDynamicLink: ${androidArgumentDynamicLink.toString()}")
+
+
+        val dynamicLink = DotDynamicLink(
+            link = link,
+            androidArgumentDynamicLink = androidArgumentDynamicLink
+        )
+
+        viewModelScope.async {
+            state.value.letter.url = FirebaseDeepLinkService.makeDynamicLink(
+                callback = { setDeepLinkUrl(it) },
+                dynamicLink= dynamicLink
+            ).toString()
+        }
 
     }
 
@@ -77,9 +86,10 @@ class LetterWriteViewModel @Inject constructor(
     }
 
     private fun setDeepLinkUrl(url: String,) {
-        state.value.letter.copy(
-//            uuid = repository.getUUID()
-            url= url
+        _state.value = _state.value.copy(
+            letter= _state.value.letter.copy(
+                url= url,
+            )
         )
     }
 

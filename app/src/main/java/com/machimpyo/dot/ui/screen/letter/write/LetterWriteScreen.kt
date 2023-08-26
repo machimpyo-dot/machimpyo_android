@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -369,15 +371,18 @@ fun SendPopup(
                 ) {
 
                     Text(
+                        modifier= Modifier.fillMaxWidth(0.8f),
                         text = url,
                         style = dotTypo.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             lineHeightStyle = LineHeightStyle(
                                 alignment = LineHeightStyle.Alignment.Center,
                                 trim = LineHeightStyle.Trim.None
-                            )
+                            ),
                         ),
-                        color = URLColor
+                        color = URLColor,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
                     )
 
                     //접근성 (IconButton 기본 사이즈 48x48를 없애기 위함)
