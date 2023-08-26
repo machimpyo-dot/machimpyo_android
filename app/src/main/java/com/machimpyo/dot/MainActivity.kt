@@ -12,6 +12,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -19,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -36,6 +40,8 @@ import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
 import com.machimpyo.dot.utils.ThemeHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -89,7 +95,6 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseDeepLinkService.openDynamicLink(intent)
         installSplashScreen()
         initAppUpdateSettings()
         setupThemeMode()
@@ -101,8 +106,24 @@ class MainActivity : ComponentActivity() {
 
             val userState by authViewModel.userState.collectAsState()
 
+            // TODO 이걸 여기 놓아야할까요? .. 나경
+            var deepLinkDestination by remember{
+                mutableStateOf("")
+            }
+
             LaunchedEffect(Unit) {
 //                authViewModel.logOut()
+                FirebaseDeepLinkService.openDynamicLink(
+                    callback= {link ->
+                        if (link != null) {
+                            if (link.nav.isNotBlank() && link.uid.isNotBlank()){
+                                deepLinkDestination = "${link.nav}/${link.uid}"
+                                navHostController.navigate(deepLinkDestination)
+                            }
+                        }
+                    },
+                    intent = intent
+                )
             }
 
             MachimpyoTheme {

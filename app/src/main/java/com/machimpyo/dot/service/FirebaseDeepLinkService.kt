@@ -45,7 +45,7 @@ data class DotDynamicLink(
 }
 
 data class Link(
-    val url:String,
+    val url:String = DOMAIN_URI_PREFIX,
     val nav: String = "",
     val uid: String = "",
 )
@@ -59,6 +59,25 @@ data class Link(
                 "&uid=${uid}"
 
         return result
+    }
+
+    companion object {
+        val TAG = "Link"
+        //link 문자열을 Link클래스로 분해
+        fun parseLink(link: Uri): Link? {
+            var parsedLink: Link? = null
+            try {
+                parsedLink= Link(
+                    url= link.host.orEmpty(),
+                    nav= link.getQueryParameter("nav").orEmpty(),
+                    uid= link.getQueryParameter("uid").orEmpty(),
+                )
+                Log.i(TAG, parsedLink.toString())
+            } catch (e: Exception) {
+                Log.e(TAG, e.toString())
+            }
+            return parsedLink
+        }
     }
 }
 data class AndroidArgumentDynamicLink(
@@ -152,18 +171,20 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
         return dynamicLink.createDynamicLink()
     }
 
-    fun openDynamicLink(intent: Intent?) {
+    fun openDynamicLink(callback: (Link?) -> Unit = {}, intent: Intent?) {
         Log.i("인텐트", intent.toString())
         getDynamicLink(intent)
             .addOnSuccessListener {pendingDynamicLinkData: PendingDynamicLinkData? ->
-
                 //GetDeeplink from result
                 var deepLink: Uri? = null
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
+                    deepLink?.let {
+                        callback(Link.parseLink(link = it))
+                    }
                 }
-                Log.i("DYNAMIC_LINK", pendingDynamicLinkData.toString())
                 Log.i("DYNAMIC_LINK", deepLink.toString())
+
             }
             .addOnFailureListener { e -> Log.w("DYNAMIC_LINK", "getDynamicLink:onFailure", e) }
     }
@@ -206,7 +227,4 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
             Log.i("DYNAMIC_LINK", "생성 취소")
         }
     }
-
-    //    fun goToScreen
-
 }
