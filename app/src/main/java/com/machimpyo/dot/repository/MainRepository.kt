@@ -31,6 +31,7 @@ interface MainRepository {
 
     suspend fun getLetterNames(): Result<List<LetterName>>
 
+
     /*
     나경 부분 아래로 쓰고
      */

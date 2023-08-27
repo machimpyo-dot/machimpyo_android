@@ -426,32 +426,32 @@ fun MyPageScreen(
 
                                         }
 
-                                        IconButton(
-                                            modifier = Modifier
-                                                .background(
-                                                    color = Color.White,
-                                                    shape = CircleShape
-                                                )
-                                                .border(
-                                                    width = 1.dp,
-                                                    color = DotColor.grey1,
-                                                    shape = CircleShape
-                                                )
-                                                .size(25.dp)
-                                                .align(Alignment.BottomEnd),
-                                            onClick = {
-                                                photoPickerLauncher.launch(
-                                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                                )
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.CameraAlt,
-                                                tint = DotColor.grey3,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(15.dp)
-                                            )
-                                        }
+//                                        IconButton(
+//                                            modifier = Modifier
+//                                                .background(
+//                                                    color = Color.White,
+//                                                    shape = CircleShape
+//                                                )
+//                                                .border(
+//                                                    width = 1.dp,
+//                                                    color = DotColor.grey1,
+//                                                    shape = CircleShape
+//                                                )
+//                                                .size(25.dp)
+//                                                .align(Alignment.BottomEnd),
+//                                            onClick = {
+//                                                photoPickerLauncher.launch(
+//                                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//                                                )
+//                                            }
+//                                        ) {
+//                                            Icon(
+//                                                imageVector = Icons.Default.CameraAlt,
+//                                                tint = DotColor.grey3,
+//                                                contentDescription = null,
+//                                                modifier = Modifier.size(15.dp)
+//                                            )
+//                                        }
 
 
                                     }
@@ -658,7 +658,7 @@ fun MyPageScreen(
                                     AsyncImage(
                                         model = photoUrl,
                                         contentDescription = null,
-                                        contentScale = ContentScale.Crop,
+                                        contentScale = ContentScale.Inside,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(topBarHeight),

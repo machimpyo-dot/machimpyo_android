@@ -1,5 +1,7 @@
 package com.machimpyo.dot.network.service
 
+import com.machimpyo.dot.data.model.LetterBox
+import com.machimpyo.dot.data.model.LetterName
 import com.machimpyo.dot.data.model.response.FirebaseCustomToken
 import com.machimpyo.dot.data.model.request.ExitDateUpdate
 import com.machimpyo.dot.data.model.request.KakaoAccessToken
@@ -39,6 +41,12 @@ interface MainService {
         @Body exitDate: ExitDateUpdate
     ): Response<Map<String, Boolean>>
 
+    @GET("company/send_persons")
+    suspend fun getLetterNames(
+    ): Response<List<LetterName>>
 
+    @GET("letter/open_talk")
+    suspend fun getLetterBox(
+    ): Response<LetterBox>
 
 }

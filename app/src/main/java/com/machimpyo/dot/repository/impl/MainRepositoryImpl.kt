@@ -67,6 +67,17 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun getLetterBox(): Result<List<LetterBoxItem>> {
         return try {
+            //TODO - 아래꺼 주석 풀어주기
+//            val response = mainService.getLetterBox()
+//
+//            if(!response.isSuccessful) {
+//                throw Exception("마이 페이지 데이터 불러오기 실패")
+//            }
+//
+//            val letterBox = response.body() ?: throw Exception("마이 페이지 데이터 불러오기 실패")
+//
+//            val letterBoxItems = letterBox.letterBoxItems
+
             Result.success(LetterBox.getMock().letterBoxItems)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -76,6 +87,15 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun getLetterNames(): Result<List<LetterName>> {
         return try {
+            //TODO - 아래 주석 풀어주기
+//            val response = mainService.getLetterNames()
+//
+//            if(!response.isSuccessful) {
+//                throw Exception("박스 아이템 리스트 가져오기 실패")
+//            }
+//
+//            val letterNames = response.body() ?: throw Exception("박스 아이템 리스트 가져오기 실패")
+
             val letterNames: MutableList<LetterName> = mutableListOf()
 
             repeat(10) {

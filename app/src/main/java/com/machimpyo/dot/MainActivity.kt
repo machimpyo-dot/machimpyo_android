@@ -89,10 +89,10 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseDeepLinkService.openDynamicLink(intent)
         installSplashScreen()
         initAppUpdateSettings()
         setupThemeMode()
+        FirebaseDeepLinkService.openDynamicLink(intent)
         setContent {
 
             val navHostController = rememberAnimatedNavController()

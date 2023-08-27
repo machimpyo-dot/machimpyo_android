@@ -197,6 +197,7 @@ fun AppNavHost(
             route = ROUTE_HOME
         ) {
             val viewModel: HomeViewModel = hiltViewModel()
+
             HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
 
