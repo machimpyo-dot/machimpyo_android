@@ -11,6 +11,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
@@ -20,8 +22,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
@@ -41,6 +46,7 @@ import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
 import com.machimpyo.dot.ui.screen.web.WebViewScreen
 import com.machimpyo.dot.ui.screen.web.WebViewViewModel
+import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.AnimatingComposable(
@@ -201,18 +207,33 @@ fun AppNavHost(
         }
 
         /*
-        편지지 무늬 고르는 화면
+        편지 확인하는 화면
          */
         AnimatingComposable(
             route = "$ROUTE_LETTER_CHECK/{letter_uid}",
+            deepLinks= listOf(navDeepLink { uriPattern = "${Link(nav= ROUTE_LETTER_CHECK, uid = "{letter_uid}")}"}),
             arguments = listOf(
                 navArgument("letter_uid") {
-                    type = NavType.LongType
+                    type = NavType.StringType
                     nullable = false
                 }
             )
         ) {
-            LetterCheckScreen(navController = navController)
+            val userState by authViewModel.userState.collectAsState()
+
+            if (userState.user == null) {
+                val viewModel: LogInViewModel = hiltViewModel()
+
+                LogInScreen(
+                    navController = navController,
+                    viewModel = viewModel,
+                    authViewModel = authViewModel
+                )
+            } else {
+                LetterCheckScreen(navController = navController )
+
+            }
+
         }
 
         /*
@@ -222,8 +243,7 @@ fun AppNavHost(
             route = "$ROUTE_LETTER_WRITE/{color_id}/{pattern_id}",
             arguments = listOf(
                 navArgument("color_id") {
-                    type = NavType.IntType
-                    defaultValue = 0
+                    type = NavType.StringType
                     nullable = false
                 },
                 navArgument("pattern_id") {
@@ -243,8 +263,7 @@ fun AppNavHost(
             route = "$ROUTE_SELECT_LETTER_DESIGN/{color_id}",
             arguments = listOf(
                 navArgument("color_id") {
-                    type = NavType.IntType
-                    defaultValue = 0
+                    type = NavType.StringType
                     nullable = false
                 }
             )
@@ -287,7 +306,6 @@ fun AppNavHost(
             val viewModel: LogInViewModel = hiltViewModel()
             LogInScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
         }
-
 
     }
 }

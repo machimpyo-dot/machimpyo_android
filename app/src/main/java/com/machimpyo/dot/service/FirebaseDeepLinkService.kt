@@ -7,19 +7,13 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData
-import com.google.firebase.dynamiclinks.ShortDynamicLink
 import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.dynamicLink
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
+import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.ktx.Firebase
 import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.tasks.await
 
 data class DotDynamicLink(
     val domainUriPrefix: String = DOMAIN_URI_PREFIX,
@@ -27,6 +21,7 @@ data class DotDynamicLink(
     val androidArgumentDynamicLink: AndroidArgumentDynamicLink = AndroidArgumentDynamicLink(),
     val iosArgumentDynamicLink: IosArgumentDynamicLink = IosArgumentDynamicLink(),
     val otherPlatformArgumentDynamicLink: OtherPlatformArgumentDynamicLink = OtherPlatformArgumentDynamicLink(),
+    val socialMetaTagArgumentDynamicLink: SocialMetaTagArgumentDynamicLink = SocialMetaTagArgumentDynamicLink(),
     val gA4ArgumentDynamicLink: GA4ArgumentDynamicLink = GA4ArgumentDynamicLink()
 ){
     override fun toString(): String {
@@ -64,7 +59,7 @@ data class Link(
     companion object {
         val TAG = "Link"
         //link 문자열을 Link클래스로 분해
-        fun parseLink(link: Uri): Link? {
+        fun parse(link: Uri): Link? {
             var parsedLink: Link? = null
             try {
                 parsedLink= Link(
@@ -106,17 +101,16 @@ data class IosArgumentDynamicLink(
     val efr: String = "",
 ){
     override fun toString(): String {
-        val result: String = ""
-        result.apply {
-            if(ibi.isNotBlank()) plus("&ibi=${ibi}")
-            if(ifl.isNotBlank()) plus("&ifl=${ifl}")
-            if(ius.isNotBlank()) plus("&ius=${ius}")
-            if(ipfl.isNotBlank()) plus("&ipfl=${ipfl}")
-            if(ipbi.isNotBlank()) plus("&ipbi=${ipbi}")
-            if(isi.isNotBlank()) plus("&isi=${isi}")
-            if(imv.isNotBlank()) plus("&imv=${imv}")
-            if(efr.isNotBlank()) plus("&efr=${efr}")
-        }
+        var result: String = ""
+
+        result =  (if(ibi.isNotBlank()) ("&ibi=${ibi}") else "") +
+                (if(ifl.isNotBlank()) ("&ifl=${ifl}") else "") +
+                (if(ius.isNotBlank()) ("&ius=${ius}") else "") +
+                (if(ipfl.isNotBlank()) ("&ipfl=${ipfl}") else "") +
+                (if(ipbi.isNotBlank()) ("&ipbi=${ipbi}") else "") +
+                (if(isi.isNotBlank()) ("&isi=${isi}") else "") +
+                (if(imv.isNotBlank()) ("&imv=${imv}") else "") +
+                (if(efr.isNotBlank()) ("&efr=${efr}") else "")
 
         return result
     }
@@ -126,10 +120,25 @@ data class OtherPlatformArgumentDynamicLink(
     val ofl: String = "",
 ){
     override fun toString(): String {
-        val result: String = ""
-        result.apply {
-            if(ofl.isNotBlank()) plus("&ofl=${ofl}")
-        }
+        var result: String = ""
+
+        result = (if(ofl.isNotBlank()) ("&ofl=${ofl}") else "")
+
+        return result
+    }
+}
+
+data class SocialMetaTagArgumentDynamicLink(
+    val st: String = "",
+    val sd: String = "",
+    val si: Uri? = null,
+){
+    override fun toString(): String {
+        var result: String = ""
+
+        result = if(st.isNotBlank()) "&st=${st}" else "" +
+                if(sd.isNotBlank()) "&sd=${sd}" else "" +
+                if(si != null) "&si=${si}" else ""
 
         return result
     }
@@ -143,14 +152,14 @@ data class GA4ArgumentDynamicLink(
     val utm_content: String = "",
 ){
     override fun toString(): String {
-        val result: String = ""
-        result.apply {
-            if(utm_source.isNotBlank()) plus("&utm_source=${utm_source}")
-            if(utm_medium.isNotBlank()) plus("&utm_medium=${utm_medium}")
-            if(utm_campaign.isNotBlank()) plus("&utm_campaign=${utm_campaign}")
-            if(utm_term.isNotBlank()) plus("&utm_term=${utm_term}")
-            if(utm_content.isNotBlank()) plus("&utm_content=${utm_content}")
-        }
+        var result: String = ""
+
+        result =  (if(utm_source.isNotBlank()) ("&utm_source=${utm_source}") else "") +
+                (if(utm_medium.isNotBlank()) ("&utm_medium=${utm_medium}") else "") +
+                (if(utm_campaign.isNotBlank()) ("&utm_campaign=${utm_campaign}") else "") +
+                (if(utm_term.isNotBlank()) ("&utm_term=${utm_term}") else "") +
+                (if(utm_content.isNotBlank()) ("&utm_content=${utm_content}") else "")
+
 
         return result
     }
@@ -158,7 +167,9 @@ data class GA4ArgumentDynamicLink(
 
 
 object FirebaseDeepLinkService: FirebaseDynamicLinks() {
-    val dynamicLink: FirebaseDynamicLinks = Firebase.dynamicLinks
+    var latestOpenLink: Link? = null
+
+    private val dynamicLink: FirebaseDynamicLinks = Firebase.dynamicLinks
     override fun getDynamicLink(intent: Intent?): Task<PendingDynamicLinkData> {
         return dynamicLink.getDynamicLink(intent)
     }
@@ -171,7 +182,7 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
         return dynamicLink.createDynamicLink()
     }
 
-    fun openDynamicLink(callback: (Link?) -> Unit = {}, intent: Intent?) {
+    fun readDynamicLink(callback: (Link?) -> Unit = {}, intent: Intent?) {
         Log.i("인텐트", intent.toString())
         getDynamicLink(intent)
             .addOnSuccessListener {pendingDynamicLinkData: PendingDynamicLinkData? ->
@@ -180,7 +191,9 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
                     deepLink?.let {
-                        callback(Link.parseLink(link = it))
+                        latestOpenLink = Link.parse(link = it)
+
+                        callback(latestOpenLink)
                     }
                 }
                 Log.i("DYNAMIC_LINK", deepLink.toString())
@@ -189,8 +202,9 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
             .addOnFailureListener { e -> Log.w("DYNAMIC_LINK", "getDynamicLink:onFailure", e) }
     }
 
+
     fun makeDynamicLink(callback: (String) -> Unit, dynamicLink: DotDynamicLink){
-        var dynamicLinkResult: DynamicLink
+        val dynamicLinkResult: DynamicLink
 
         dynamicLinkResult = Firebase.dynamicLinks.dynamicLink  {
             Log.i("DYNAMIC_LINK", "생성 요청")
@@ -198,16 +212,21 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
             domainUriPrefix = dynamicLink.domainUriPrefix
 
             androidParameters(packageName = dynamicLink.androidArgumentDynamicLink.apn) {
-                minimumVersion = dynamicLink.androidArgumentDynamicLink.amv.toInt()
-//                fallbackUrl = Uri.parse(dynamicLink.androidArgumentDynamicLink.afl)
+                minimumVersion = dynamicLink.androidArgumentDynamicLink.amv
+                fallbackUrl = Uri.parse(dynamicLink.androidArgumentDynamicLink.afl)
+            }
+
+            socialMetaTagParameters {
+                this.title = dynamicLink.socialMetaTagArgumentDynamicLink.st
+                this.description = dynamicLink.socialMetaTagArgumentDynamicLink.sd
+                dynamicLink.socialMetaTagArgumentDynamicLink.si?.let {
+                    this.imageUrl = it
+                }
             }
 
         }
 
-        Log.i("DYNAMIC_LINK", "dynamiclink 생성 완료 ${dynamicLinkResult.uri}")
-
         Firebase.dynamicLinks.shortLinkAsync  {
-            Log.i("DYNAMIC_LINK", "생성 요청")
             longLink = dynamicLinkResult.uri
 //            link = Uri.parse(dynamicLink.link.toString())
 //            domainUriPrefix = dynamicLink.domainUriPrefix
@@ -219,12 +238,21 @@ object FirebaseDeepLinkService: FirebaseDynamicLinks() {
 //            Log.i("DYNAMIC_LINK", "생성 요청")
         }.addOnSuccessListener { shortDynamicLink ->
             callback(shortDynamicLink.shortLink.toString())
-            Log.i("DYNAMIC_LINK", "shortLink 생성 완료 ${shortDynamicLink.shortLink}")
+//            Log.i("DYNAMIC_LINK", "shortLink 생성 완료 ${shortDynamicLink.shortLink}")
         }.addOnFailureListener { exception ->
             callback("실패")
             Log.e("DYNAMIC_LINK", "생성 실패\n ${exception}")
         }.addOnCanceledListener {
             Log.i("DYNAMIC_LINK", "생성 취소")
         }
+    }
+
+    fun openDynamicLink(callback: (Link) -> Unit, link: Link?): Boolean {
+        if (link == null) return false
+        if (link.nav.isBlank()) return false
+
+        callback(link)
+
+        return true
     }
 }

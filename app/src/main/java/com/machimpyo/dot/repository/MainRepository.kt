@@ -1,7 +1,9 @@
 package com.machimpyo.dot.repository
 
 import com.airbnb.lottie.animation.content.Content
+import com.machimpyo.dot.data.model.ColorList
 import com.machimpyo.dot.data.model.ContentInfo
+import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
 import java.time.LocalDate
@@ -34,5 +36,14 @@ interface MainRepository {
     /*
     나경 부분 아래로 쓰고
      */
+
+//    suspend fun updateTempLetter(letter: Letter)
+//
+    suspend fun createLetter(letter: Letter): Result<Long>
+
+    suspend fun getLetterDesign(): Result<ColorList>
+
+    suspend fun getLetter(uid: Long): Result<Letter>
+
 
 }

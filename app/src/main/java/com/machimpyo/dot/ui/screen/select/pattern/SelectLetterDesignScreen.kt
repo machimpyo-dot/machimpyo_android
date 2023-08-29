@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
@@ -32,6 +31,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +70,8 @@ fun SelectLetterDesignScreen(
     navController: NavController,
     viewModel: SelectLetterDesignViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
     var select by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember {
@@ -79,8 +81,8 @@ fun SelectLetterDesignScreen(
     val patternSize: Int = LetterPatternList.size
 
     var selectedPattern by remember {
-        Log.i("고른패턴", ""+viewModel.state.value.selectedPattern)
-        mutableStateOf(viewModel.state.value.selectedPattern)
+        Log.i("고른패턴", ""+state.selectedPattern)
+        mutableStateOf(state.selectedPattern)
     }
 
     val eachRotation:Float = 360.0f / (patternSize*4).toFloat()
@@ -217,7 +219,7 @@ fun SelectLetterDesignScreen(
                         modifier = modifier
                             .fillMaxWidth(0.5f)
                             .aspectRatio(18 / 40f),
-                        color = LetterColorList[viewModel.state.value.selectedColor],
+                        color = viewModel.getSelectedColor(),
                         border= BorderStroke(width = 1.dp, color= DotColor.grey6),
                         background = {
                             LetterBackground(id = selectedPattern)
@@ -282,7 +284,7 @@ fun SelectLetterDesignScreen(
                 ) {
                 LetterDesignList(
                     patternSize = patternSize,
-                    letterColor = LetterColorList[viewModel.state.value.selectedColor],
+                    letterColor = viewModel.getSelectedColor(),
                 )
             }
         }

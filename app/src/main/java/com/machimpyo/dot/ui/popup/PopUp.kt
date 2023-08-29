@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.popup
 
+import android.widget.ProgressBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -264,6 +267,25 @@ fun SelectButton(
                     trim = LineHeightStyle.Trim.None
                 )
             )
+        )
+    }
+}
+
+@Composable
+fun ProgressBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = Color.Black.copy(
+                    alpha = 0.7f
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = DotColor.primaryColor,
+            modifier = Modifier.size(100.dp)
         )
     }
 }

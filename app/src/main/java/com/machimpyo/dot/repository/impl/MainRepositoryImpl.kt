@@ -1,8 +1,10 @@
 package com.machimpyo.dot.repository.impl
 
 import android.util.Log
-import com.machimpyo.dot.BuildConfig
+import com.google.gson.GsonBuilder
+import com.machimpyo.dot.data.model.ColorList
 import com.machimpyo.dot.data.model.ContentInfo
+import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterBox
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
@@ -96,4 +98,41 @@ class MainRepositoryImpl @Inject constructor(
     나경
      */
 
+    override suspend fun getLetterDesign(): Result<ColorList> {
+        try {
+
+            val response = mainService.getLetterDesign()
+
+            if (response.isSuccessful) {
+                response.body()?.let { list ->
+                    return Result.success(ColorList(list))
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+
+        return Result.failure(NoSuchElementException("색상 리스트를 찾을 수 없음"))
+    }
+
+    override suspend fun createLetter(letter: Letter): Result<Long> {
+        return try {
+            val response = mainService.createLetter(letter)
+            Result.success(response.body()!!.getValue("letter_uid"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getLetter(uid: Long): Result<Letter> {
+        return try {
+            Result.success(mainService.getLetter(uid).body()!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
 }

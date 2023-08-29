@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.machimpyo.dot.data.model.ColorList
 import com.machimpyo.dot.ui.screen.select.Letter
 import com.machimpyo.dot.utils.extension.LetterColorList
 import kotlinx.coroutines.coroutineScope
@@ -115,7 +116,7 @@ fun CircularCarousel(
     state: CircularCarouselState = rememberCircularCarouselState(),
     contentFactory: @Composable (Int) -> Unit,
 ) {
-    require(numItems > 0) { "The number of items must be greater than 0" }
+    require(numItems >= 0) { "The number of items must be positive" }
     require(itemFraction > 0f && itemFraction < .5f) { "Item fraction must be in the (0f, .5f) range" }
     Layout(
         modifier = modifier
@@ -237,9 +238,9 @@ private fun Double.degreesToRadians(): Double = this / 360.0 * 2.0 * PI
 private fun Float.normalizeAngle(): Float = (this % 360f).let { angle -> if (this < 0f) 360f + angle else angle }
 
 @Composable
-fun ColorLetterFactory(viewModel: SelectLetterColorViewModel, index: Int = 0, onCLick: () -> Unit = {}) {
+fun ColorLetterFactory(colorList: ColorList, index: Int = 0, onCLick: () -> Unit = {}) {
     Letter(background = {},
-        color= LetterColorList[index],
+        color= colorList.getColor(index),
         modifier = Modifier
             .size(61.dp, 135.dp),
         clickable= true,
