@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.user.UserApiClient
+import com.machimpyo.dot.data.store.LetterDesignSharedPreferences
 import com.machimpyo.dot.data.store.TokenSharedPreferences
 import com.machimpyo.dot.network.adapter.LocalDateAdapter
 import com.machimpyo.dot.network.endpoint.MAIN_SERVICE_BASE_URL
@@ -130,4 +131,14 @@ object AppModule {
         return TokenSharedPreferences(context)
     }
 
+    /*
+    편지 디자인을 캐싱해두기 위한 TokenSharedPreferences
+ */
+    @Singleton
+    @Provides
+    fun provideLetterDesignPreferences(
+        @ApplicationContext context: Context
+    ): LetterDesignSharedPreferences {
+        return LetterDesignSharedPreferences(context)
+    }
 }

@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.machimpyo.dot.data.model.Letter
-import com.machimpyo.dot.ui.screen.select.Letter
 import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 
@@ -99,7 +98,7 @@ fun SaveBottomSheetItem(letter: Letter) {
         Text(text = letter.title,
             style = dotTypo.labelMedium,
             color = DotColor.grey6)
-        Text(text = letter.contents,
+        Text(text = letter.content,
             style = dotTypo.labelSmall,
             color = DotColor.grey4)
     }

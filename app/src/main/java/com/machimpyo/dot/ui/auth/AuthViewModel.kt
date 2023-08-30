@@ -8,6 +8,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.machimpyo.dot.data.model.response.UserInfo
 import com.machimpyo.dot.repository.AuthRepository
+import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.service.Link
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,10 +60,22 @@ class AuthViewModel @Inject constructor(
         _userState.update {
             UserState(
                 user,
-                userInfo
+                userInfo,
+                it.isDeeplink
             )
         }
     }
+//
+//    fun updateIsDeeplink(isDeeplink: Boolean) {
+//        _userState.update {
+//            UserState(
+//                user = it.user,
+//                userInfo = it.userInfo,
+//                isDeeplink = isDeeplink,
+//            )
+//        }
+//        Log.e("TAG", "updateIsDeeplink!!! ${_userState.value}")
+//    }
 
     fun kakaoLogin(context: Context, callback: (Boolean)->Unit) = viewModelScope.launch {
         repository.signInWithKakao(context) { result ->
@@ -79,5 +93,6 @@ class AuthViewModel @Inject constructor(
         val user: FirebaseUser? = null,
         val userInfo: UserInfo? = null,
         //딥링크인지
+        val isDeeplink: Boolean = false,
     )
 }

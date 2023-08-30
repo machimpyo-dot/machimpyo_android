@@ -1,6 +1,6 @@
 package com.machimpyo.dot.data.model
 
-import com.machimpyo.dot.R
+import com.google.gson.annotations.SerializedName
 import com.machimpyo.dot.utils.extension.randomLocalDate
 import com.machimpyo.dot.utils.extension.randomText
 import java.time.LocalDate
@@ -8,9 +8,12 @@ import java.time.LocalDate
 
 //my_talk, related_talk 과 대응
 data class Letter(
-    val title: String,
-    val contents: String,
-    val uid: Long,
+    @SerializedName(value="title") val title: String,
+    @SerializedName(value="content") val content: String,
+    @SerializedName(value="letter_design_uid") val letterDesignUid: Long?,
+    @SerializedName(value="colorcode")val colorcode: String?,
+    @SerializedName(value="letter_uid") val uid: Long?,
+    @SerializedName(value="related_letter_uid")val relatedLetterUid: Long?,
     val profileUrl: String?,
     val nickname: String,
     var url: String?,
@@ -24,11 +27,14 @@ data class Letter(
             val profileUrl = "https://randomuser.me/api/portraits/women/2.jpg"
             return Letter(
                 title = title,
-                contents = contents,
+                content = contents,
                 uid = uid,
+                relatedLetterUid = null,
                 profileUrl = profileUrl,
                 nickname = nickname,
-                url = null
+                letterDesignUid = null,
+                colorcode = null,
+                url = null,
             )
         }
     }
@@ -66,11 +72,11 @@ data class Company(
     val uid: String,
     val exitDate: LocalDate?,
     val recentLetterContents: String?,
-    val photoUrl: Any? = R.drawable.dot_icon
+    val photoUrl: Any?
 ) {
     companion object {
         fun getMock(): Company {
-            val photoUrl = R.drawable.dot_icon
+            val photoUrl = "https://images.unsplash.com/photo-1688380692117-63178554d76d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
             val exitDate = randomLocalDate()
             val name = String.randomText(10)
             val recentLetterContents = String.randomText(200)

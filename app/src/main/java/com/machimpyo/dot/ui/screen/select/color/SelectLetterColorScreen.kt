@@ -20,6 +20,8 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +35,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.machimpyo.dot.ui.popup.ProgressBar
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
 import com.machimpyo.dot.ui.topappbar.Back
@@ -47,6 +50,9 @@ fun SelectLetterColorScreen(
     navController: NavController,
     viewModel: SelectLetterColorViewModel = hiltViewModel<SelectLetterColorViewModel>()
 ) {
+    val state by viewModel.state.collectAsState()
+
+    if (state.isLoading) ProgressBar()
 
     val spacing = LocalSpacing.current
     val dotTypo = LocalDotTypo.current
@@ -151,8 +157,10 @@ fun SelectLetterColorScreen(
                     color = Color.White)
             }
 
+            Log.i("COLOR", "${state.letterColorList.list.size}")
+
             CircularCarousel(
-                numItems = LetterColorList.size,
+                numItems = state.letterColorList.list.size,
                 itemFraction = 0.25f,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,12 +172,8 @@ fun SelectLetterColorScreen(
                         end.linkTo(parent.end)
                     }
             ) {
-                ColorLetterFactory(viewModel = viewModel, index = it) {
-                    viewModel.setColor(it)
-                    Log.i(
-                        "선택된 색상",
-                        "${viewModel.state.value.selectedColor}번, 값 ${viewModel.state.value.selectedColor}"
-                    )
+                ColorLetterFactory(colorList = state.letterColorList, index = it) {
+                    viewModel.setColor(state.letterColorList.list[it])
                     viewModel.goToSelectDesignScreen()
                 }
             }
@@ -190,7 +194,9 @@ fun BackgroundContent(
     val boxModifier = modifier
 
     Column(
-        modifier = boxModifier.background(color).padding(20.dp),
+        modifier = boxModifier
+            .background(color)
+            .padding(20.dp),
         ){
         content()
     }

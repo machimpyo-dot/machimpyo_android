@@ -12,8 +12,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -28,14 +30,16 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.OnSuccessListener
 import com.machimpyo.dot.navigation.AppNavHost
 import com.machimpyo.dot.navigation.ROUTE_HOME
+import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.navigation.ROUTE_LOGIN
-import com.machimpyo.dot.navigation.ROUTE_MY_PAGE
 import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
 import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
 import com.machimpyo.dot.utils.ThemeHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -102,7 +106,23 @@ class MainActivity : ComponentActivity() {
             val userState by authViewModel.userState.collectAsState()
 
             LaunchedEffect(Unit) {
-//                authViewModel.logOut()
+                authViewModel.logOut()
+
+//                async {
+//                    FirebaseDeepLinkService.readDynamicLink(
+//                        callback = { link ->
+////                            authViewModel.updateIsDeeplink(link != null)
+////                        FirebaseDeepLinkService.openDynamicLink(
+////                            callback = {openLink: Link ->
+////                                deepLinkDestination = "${openLink.nav}/${openLink.uid}"
+////                                navHostController.navigate(deepLinkDestination)
+////                            },
+////                            link = link
+////                        )
+//                        },
+//                        intent = intent
+//                    )
+//                }
             }
 
             MachimpyoTheme {
@@ -114,16 +134,20 @@ class MainActivity : ComponentActivity() {
 
                     AppNavHost(
                         navController = navHostController,
-                        startDestination = ROUTE_HOME
-//                        if(userState.user == null) ROUTE_LOGIN
-//                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
-//                        //이때 uid로 동일 사용자인지 구분할 필요 있음
-//                        //datastore 고려해보고 있음
-//                        else if(userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
-//                            ROUTE_HOME
-//                        }
-//                        //else if (userState.isDynamicLink) ROUTE_LETTER_CHECK
-//                        else ROUTE_PROFILE_SETTINGS
+                        startDestination =
+                            if(userState.user == null) ROUTE_LOGIN
+    //                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
+    //                        //이때 uid로 동일 사용자인지 구분할 필요 있음
+    //                        //datastore 고려해보고 있음
+//                            else if (userState.isDeeplink && FirebaseDeepLinkService.latestOpenLink != null) {
+//                                FirebaseDeepLinkService.latestOpenLink!!.nav
+//                            }
+
+                            else if (userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
+                                ROUTE_HOME
+                            }
+
+                            else ROUTE_PROFILE_SETTINGS
                         ,
                         authViewModel = authViewModel
                     )

@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kakao.sdk.user.UserApiClient
 import com.machimpyo.dot.R
 import com.machimpyo.dot.ui.auth.AuthViewModel
+import com.machimpyo.dot.ui.popup.ProgressBar
 import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.theme.LocalDotTypo
 import com.machimpyo.dot.ui.theme.LocalSpacing
@@ -221,21 +222,7 @@ fun LogInScreen(
         }
 
         if(state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = Color.Black.copy(
-                            alpha = 0.7f
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = DotColor.primaryColor,
-                    modifier = Modifier.size(100.dp)
-                )
-            }
+            ProgressBar()
         }
     }
 }

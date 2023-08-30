@@ -29,6 +29,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.machimpyo.dot.data.model.LetterConfig
+import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.screen.select.Letter
 import com.machimpyo.dot.ui.screen.select.LetterBackground
 import com.machimpyo.dot.ui.screen.select.LetterContent
@@ -37,12 +39,13 @@ import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.topappbar.Back
 import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
 import com.machimpyo.dot.utils.extension.LetterColorList
+import kotlinx.coroutines.async
 
 @Composable
 fun LetterCheckScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: LetterCheckViewModel = hiltViewModel()
+    viewModel: LetterCheckViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -51,6 +54,8 @@ fun LetterCheckScreen(
     }
 
     LaunchedEffect(viewModel) {
+//        if(userState.isDeeplink) viewModel.openDeepLink()
+
         viewModel.effect.collect {
             when (it) {
                 is LetterCheckViewModel.Effect.NavigateTo -> {
@@ -117,7 +122,7 @@ fun LetterCheckScreen(
                     .fillMaxWidth()
                     .aspectRatio(ratio = 18 / 40f),
                 background ={ LetterBackground(id = state.selectedPattern) },
-                color = LetterColorList[state.selectedColor]
+                color = viewModel.getSelectedColor()
             ) {
                 Column(
                     modifier = Modifier
@@ -134,7 +139,7 @@ fun LetterCheckScreen(
                     Spacer(modifier= Modifier.height(20.dp))
 
                     LetterContent(
-                        content = state.letter.contents,
+                        content = state.letter.content,
 //                        maxLine = state.letterConfig.contentMaxLine,
                         hint = "",
                         readOnly = true,
@@ -152,7 +157,6 @@ fun LetterCheckScreen(
 @Composable
 fun Preview() {
     val letter = com.machimpyo.dot.data.model.Letter.getMock()
-    val letterConfig = LetterConfig()
 
     Scaffold(
         modifier = Modifier
@@ -198,7 +202,7 @@ fun Preview() {
                     Spacer(modifier = Modifier.height(20.dp))
 
                     LetterContent(
-                        content = letter.contents,
+                        content = letter.content,
 //                        maxLine = letterConfig.contentMaxLine,
                         hint = "",
                         readOnly = true,

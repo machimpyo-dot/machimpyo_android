@@ -51,10 +51,8 @@ class TextList(
     @Composable
     fun textToComposable(style: TextStyle){
         Text(text = buildAnnotatedString {
-            Log.i("TextList", getText())
 
             for ((text, importance) in textList) {
-                Log.i("TextList", text)
 
                 withStyle(style = ParagraphStyle(lineHeight = TextUnit(style.fontSize.value + 5f, type = TextUnitType.Sp))){
                     withStyle(
