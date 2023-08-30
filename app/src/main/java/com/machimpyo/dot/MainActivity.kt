@@ -2,6 +2,7 @@ package com.machimpyo.dot
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
@@ -18,7 +19,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.datastore.preferences.core.Preferences
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -26,6 +29,10 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
+import com.machimpyo.dot.data.model.response.UserInfo
+import com.machimpyo.dot.data.model.response.toUserInfo
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.navigation.AppNavHost
 import com.machimpyo.dot.navigation.ROUTE_HOME
 import com.machimpyo.dot.navigation.ROUTE_LOGIN
@@ -36,6 +43,9 @@ import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
 import com.machimpyo.dot.utils.ThemeHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -44,6 +54,12 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var appUpdateManager: AppUpdateManager
     private lateinit var appUpdateListener : OnSuccessListener<AppUpdateInfo>
+
+    @Inject
+    lateinit var authDataStore: AuthDataStore
+
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
 
     private fun initAppUpdateSettings() {
         appUpdateManager = AppUpdateManagerFactory.create(this)
@@ -102,7 +118,7 @@ class MainActivity : ComponentActivity() {
             val userState by authViewModel.userState.collectAsState()
 
             LaunchedEffect(Unit) {
-//                authViewModel.logOut()
+                firebaseAuth.signOut()
             }
 
             MachimpyoTheme {
@@ -112,9 +128,24 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
+                    val userInfoProto = authDataStore.getUserInfoFlow().collectAsState(initial = null)
+
+                    val userInfo: UserInfo? = userInfoProto.value?.toUserInfo()
+
+                    val startDestination = when {
+                        userInfo?.uid == null -> ROUTE_LOGIN
+                        userInfo.nickName != null && userInfo.company != null -> ROUTE_HOME
+                        else -> ROUTE_PROFILE_SETTINGS
+                    }
+
+                    LaunchedEffect(userInfoProto) {
+                        Log.e("TAG","라우트 확인 $userInfo")
+                        navHostController.navigate(startDestination)
+                    }
+
                     AppNavHost(
                         navController = navHostController,
-                        startDestination = ROUTE_HOME
+                        startDestination = startDestination
 //                        if(userState.user == null) ROUTE_LOGIN
 //                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
 //                        //이때 uid로 동일 사용자인지 구분할 필요 있음

@@ -107,6 +107,8 @@ fun AppNavHost(
     authViewModel: AuthViewModel
 ) {
 
+
+
     AnimatedNavHost(
         modifier = modifier,
         navController = navController,

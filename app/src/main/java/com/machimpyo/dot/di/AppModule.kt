@@ -3,9 +3,12 @@ package com.machimpyo.dot.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.user.UserApiClient
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.data.store.TokenSharedPreferences
 import com.machimpyo.dot.network.adapter.LocalDateAdapter
 import com.machimpyo.dot.network.endpoint.MAIN_SERVICE_BASE_URL
@@ -14,7 +17,10 @@ import com.machimpyo.dot.network.service.MainService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,14 +35,29 @@ import javax.inject.Singleton
 object AppModule {
 
     /*
+    데이터 스토어
+     */
+    @Provides
+    @Singleton
+    fun provideTokenDataStore(
+        @ApplicationContext context: Context
+    ): AuthDataStore {
+        return AuthDataStore(
+            context
+        )
+    }
+
+
+    /*
     Token을 헤더에 붙이기 위한 Interceptor
      */
     @Provides
     @Singleton
     fun provideFirebaseAuthInterceptor(
-        prefs: TokenSharedPreferences
+        prefs: TokenSharedPreferences,
+        dataStore: AuthDataStore
     ): FirebaseAuthInterceptor {
-        return FirebaseAuthInterceptor(prefs)
+        return FirebaseAuthInterceptor(prefs, dataStore)
     }
 
     /*
@@ -89,26 +110,45 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(
-        prefs: TokenSharedPreferences
+        prefs: TokenSharedPreferences,
+        dataStore: AuthDataStore
     ): FirebaseAuth {
 
         val firebaseAuth = FirebaseAuth.getInstance()
 
         val idTokenListener = FirebaseAuth.IdTokenListener {
             Log.e("TAG", "idToken 변경 감지!!!!")
-            if(it.currentUser == null) {
-                prefs.putFirebaseIdToken(null)
+            if (it.currentUser == null) {
+//                prefs.putFirebaseIdToken(null)
+                dataStore.updateIdToken(null)
                 return@IdTokenListener
             }
 
-            it.currentUser?.getIdToken(false)?.addOnSuccessListener { tokenResult->
-                prefs.putFirebaseIdToken(tokenResult?.token)
+            it.currentUser?.getIdToken(false)?.addOnSuccessListener { tokenResult ->
+//                prefs.putFirebaseIdToken(tokenResult?.token)
+                dataStore.updateIdToken(tokenResult?.token)
                 return@addOnSuccessListener
             }
+
+//            if(it.currentUser == null) {
+//
+//                return@IdTokenListener
+//            }
+//
+//            it.currentUser?.getIdToken(false)?.addOnSuccessListener { tokenResult->
+//
+//            }
         }
 
+        val authStateListener = AuthStateListener {
+            if(it.currentUser == null) {
+                Log.e("TAG", "커런트 유저 null 감지 !!!")
+                dataStore.updateUserInfo(null)
+                dataStore.updateIdToken(null)
+            }
+        }
         firebaseAuth.addIdTokenListener(idTokenListener)
-
+//        firebaseAuth.addAuthStateListener(authStateListener)
         return firebaseAuth
 
     }

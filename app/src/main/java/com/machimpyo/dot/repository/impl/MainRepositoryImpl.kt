@@ -1,23 +1,46 @@
 package com.machimpyo.dot.repository.impl
 
 import android.util.Log
-import com.machimpyo.dot.BuildConfig
 import com.machimpyo.dot.data.model.ContentInfo
 import com.machimpyo.dot.data.model.LetterBox
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
 import com.machimpyo.dot.data.model.request.ExitDateUpdate
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.network.service.MainService
 import com.machimpyo.dot.repository.MainRepository
 import com.machimpyo.dot.utils.getMockContentInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MainRepositoryImpl @Inject constructor(
-    private val mainService: MainService
+    private val mainService: MainService,
+    private val dataStore: AuthDataStore
 ): MainRepository {
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.getIdTokenFlow().collectLatest {
+                Log.e("TAG","메인 레포지토리에서 아이디 토큰 감지 !!! : $it")
+                val response = mainService.getUserInfo()
+
+                if(!response.isSuccessful) {
+                    return@collectLatest
+                }
+
+                val userInfo = response.body() ?: return@collectLatest
+
+                dataStore.updateUserInfo(userInfo)
+            }
+
+        }
+    }
 
     /*
     민석
