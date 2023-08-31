@@ -1,7 +1,6 @@
 package com.machimpyo.dot.ui.screen.mypage
 
 import android.net.Uri
-import android.util.Log
 import androidx.navigation.NavOptionsBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
-import com.machimpyo.dot.navigation.ROUTE_WEB_VIEW
+import com.machimpyo.dot.navigation.ROUTE_THIRD_PARTY_LIBRARY
 import com.machimpyo.dot.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,13 +84,11 @@ class MyPageViewModel @Inject constructor(
         )
     }
 
-    fun goToThirdPartyLibraryCheckScreen() = viewModelScope.launch {
-        val url = "https://androidnut.notion.site/ed0c4d675287443c8c41e055389dfb8f?pvs=4"
-        val route = "$ROUTE_WEB_VIEW?url={$url}"
+    fun goToThirdPartyLibraryScreen() = viewModelScope.launch {
 
         _effect.emit(
             Effect.NavigateTo(
-                route
+                ROUTE_THIRD_PARTY_LIBRARY
             )
         )
     }
