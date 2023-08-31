@@ -138,7 +138,7 @@ data class SocialMetaTagArgumentDynamicLink(
 
         result = if(st.isNotBlank()) "&st=${st}" else "" +
                 if(sd.isNotBlank()) "&sd=${sd}" else "" +
-                if(si != null) "&si=${si}" else ""
+                        if(si != null) "&si=${si}" else ""
 
         return result
     }

@@ -8,7 +8,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class FirebaseAuthIntercep업tor @Inject constructor(
+class FirebaseAuthInterceptor @Inject constructor(
     private val prefs: TokenSharedPreferences
 )  : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

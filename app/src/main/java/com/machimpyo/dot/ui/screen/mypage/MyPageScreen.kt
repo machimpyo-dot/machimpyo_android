@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -65,6 +66,7 @@ import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -88,6 +90,7 @@ import androidx.compose.ui.layout.lerp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -402,7 +405,7 @@ fun MyPageScreen(
 //                                                contentDescription = null,
 //                                                modifier = Modifier.size(15.dp)
 //                                            )
-//                                        }
+//                                       }
 
 
                                     }
@@ -873,6 +876,24 @@ fun MyPageScreen(
                                             Spacer(modifier = Modifier.height(2.dp))
                                         }
 
+                                    }
+
+                                    item {
+                                        Spacer(modifier = Modifier.height(32.dp))
+                                    }
+
+                                    item {
+                                        TextButton(
+                                            onClick = {
+                                                viewModel.goToThirdPartyLibraryCheckScreen()
+                                            },
+                                            modifier = Modifier.align(Alignment.CenterEnd)
+                                        ) {
+                                            Text("관련 라이브러리", style = dotTypo.bodyMedium.copy(
+                                                color = Color.White,
+                                                textAlign = TextAlign.End
+                                            ))
+                                        }
                                     }
 
                                     item {

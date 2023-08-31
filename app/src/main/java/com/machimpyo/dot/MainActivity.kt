@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -12,9 +13,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
@@ -30,16 +28,12 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.OnSuccessListener
 import com.machimpyo.dot.navigation.AppNavHost
 import com.machimpyo.dot.navigation.ROUTE_HOME
-import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
 import com.machimpyo.dot.navigation.ROUTE_LOGIN
 import com.machimpyo.dot.navigation.ROUTE_PROFILE_SETTINGS
 import com.machimpyo.dot.service.FirebaseDeepLinkService
-import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.theme.MachimpyoTheme
-import com.machimpyo.dot.utils.ThemeHelper
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.async
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -95,8 +89,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         initAppUpdateSettings()
-        setupThemeMode()
-        FirebaseDeepLinkService.openDynamicLink(intent)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContent {
 
             val navHostController = rememberAnimatedNavController()
@@ -167,9 +160,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun setupThemeMode() {
-        ThemeHelper.applyTheme(ThemeHelper.ThemeMode.LIGHT)
-    }
+
 
     @Deprecated("Deprecated in Java", ReplaceWith(
         "super.onActivityResult(requestCode, resultCode, data)",

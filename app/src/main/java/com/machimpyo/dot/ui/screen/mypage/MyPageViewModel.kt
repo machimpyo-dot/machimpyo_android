@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
+import com.machimpyo.dot.navigation.ROUTE_WEB_VIEW
 import com.machimpyo.dot.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -84,6 +85,17 @@ class MyPageViewModel @Inject constructor(
         _effect.emit(
             Effect.NavigateTo(
                 "$ROUTE_LETTER_CHECK/$letterUid"
+            )
+        )
+    }
+
+    fun goToThirdPartyLibraryCheckScreen() = viewModelScope.launch {
+        val url = "https://androidnut.notion.site/ed0c4d675287443c8c41e055389dfb8f?pvs=4"
+        val route = "$ROUTE_WEB_VIEW?url={$url}"
+
+        _effect.emit(
+            Effect.NavigateTo(
+                route
             )
         )
     }
