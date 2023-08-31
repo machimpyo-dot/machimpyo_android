@@ -57,16 +57,12 @@ class MyPageViewModel @Inject constructor(
         uri ?: return@launch
         if(state.value.letterBoxItems.isEmpty()) return@launch
         val currentLetterBoxItem = state.value.letterBoxItems.getOrNull(currentPage) ?: return@launch
-        val currentCompany = currentLetterBoxItem.company
-
         //TODO 업데이트하고 회사 이미지 url response로 받아야함
 
         val updatedLetterBoxItems = state.value.letterBoxItems.map {
-            if(it.company.uid == currentCompany.uid) {
+            if(it.uid == currentLetterBoxItem.uid) {
                 it.copy(
-                    company = currentCompany.copy(
-                        photoUrl = uri
-                    )
+                    photoUrl = uri
                 )
             } else {
                 it

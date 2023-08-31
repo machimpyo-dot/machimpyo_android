@@ -8,10 +8,12 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.machimpyo.dot.data.model.request.KakaoAccessToken
 import com.machimpyo.dot.data.model.response.UserInfo
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.network.service.MainService
 import com.machimpyo.dot.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,8 +23,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val kakaoAuth: UserApiClient,
     private val mainService: MainService,
-//    @ActivityContext private val context: Context
+    private val dataStore: AuthDataStore
 ) : AuthRepository {
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.getIdTokenFlow().collect {
+                Log.e("TAG", "레포지토리에서 토큰 변경 감지!!! ${it[AuthDataStore.ID_TOKEN]}")
+            }
+        }
+    }
 
     override val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
@@ -59,7 +69,10 @@ class AuthRepositoryImpl @Inject constructor(
 
             firebaseAuth.signInWithCustomToken(result.customToken).addOnSuccessListener {
                 it.user?.let { user ->
-                    callback(Result.success(user))
+                    user.getIdToken(false).addOnSuccessListener { result->
+                        dataStore.updateIdToken(result.token)
+//                        callback(Result.success(user))
+                    }
                 } ?: callback(Result.failure(Exception("user is null")))
             }.addOnFailureListener {
                 callback(Result.failure(it))

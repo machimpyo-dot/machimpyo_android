@@ -6,6 +6,7 @@ import com.machimpyo.dot.data.model.ContentInfo
 import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
+import com.machimpyo.dot.data.model.response.AbstractLetter
 import java.time.LocalDate
 
 /*
@@ -32,6 +33,8 @@ interface MainRepository {
     suspend fun getLetterBox(): Result<List<LetterBoxItem>>
 
     suspend fun getLetterNames(): Result<List<LetterName>>
+
+    suspend fun getAbstractLetters(): Result<List<AbstractLetter>>
 
 
     /*

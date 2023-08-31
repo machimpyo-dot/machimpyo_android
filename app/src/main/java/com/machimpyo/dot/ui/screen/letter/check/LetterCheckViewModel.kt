@@ -12,8 +12,11 @@ import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterConfig
 import com.machimpyo.dot.data.store.LetterDesignSharedPreferences
 import com.machimpyo.dot.navigation.ROUTE_LETTER_CHECK
+import com.machimpyo.dot.navigation.ROUTE_LETTER_REPLY
+import com.machimpyo.dot.navigation.ROUTE_SELECT_LETTER_DESIGN
 import com.machimpyo.dot.repository.MainRepository
 import com.machimpyo.dot.service.FirebaseDeepLinkService
+import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,6 +45,8 @@ class LetterCheckViewModel @Inject constructor(
         _state.value = _state.value.copy(
             letter = repository.getLetter(uid).getOrThrow()
         )
+
+        Log.i("TAG","${_state.value.letter}")
     }
 
     private suspend fun getLetterColorList(): ColorList {
@@ -98,14 +103,19 @@ class LetterCheckViewModel @Inject constructor(
         viewModelScope.launch {
             colorList= async { getLetterColorList()}.await()
 
-            val letterUid: String? = savedStateHandle.get<String>("letter_uid")
-            Log.e("TAG",letterUid.toString())
+            val letterUid: Long? = savedStateHandle.get<Long>("letter_uid")
             letterUid?.let {
-                async { getLetter(it.toLong())}.await()
+                async { getLetter(it)}.await()
                 _state.value = _state.value.copy(
                     //TODO DB에서 #을 처리하지 않으셔서 우선 임시방편임
                     selectedColor= "${_state.value.letter.colorcode}",
                     selectedPattern = _state.value.letter.letterDesignUid!!.toInt()
+                )
+
+                _state.value = _state.value.copy(
+                    letter= _state.value.letter.copy(
+                        uid = letterUid
+                    )
                 )
             }
 
@@ -129,5 +139,13 @@ class LetterCheckViewModel @Inject constructor(
 
     private var _effect = MutableSharedFlow<Effect>()
     val effect: SharedFlow<Effect> = _effect
+
+    fun goToReplyScreen() = viewModelScope.launch {
+        _effect.emit(
+            Effect.NavigateTo(
+                ROUTE_LETTER_REPLY + "/${state.value.letter.uid}/${state.value.selectedColor}/${state.value.selectedPattern}"
+            )
+        )
+    }
 
 }

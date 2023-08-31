@@ -14,8 +14,9 @@ data class Letter(
     @SerializedName(value="colorcode")val colorcode: String?,
     @SerializedName(value="letter_uid") val uid: Long?,
     @SerializedName(value="related_letter_uid")val relatedLetterUid: Long?,
+    @SerializedName(value="sender_uid") val senderUid: String? = null,
     val profileUrl: String?,
-    val nickname: String,
+    val nickname: String?,
     var url: String?,
     ) {
     companion object {
@@ -67,38 +68,28 @@ data class Talk(
     }
 }
 
-data class Company(
+
+data class LetterBoxItem(
+    @SerializedName("talkList")
+    val talks: List<Talk>,
+    @SerializedName("company_name")
     val name: String,
+    @SerializedName("company_uid")
     val uid: String,
+    @SerializedName("endDate")
     val exitDate: LocalDate?,
+    @SerializedName("recent_text")
     val recentLetterContents: String?,
+    @SerializedName("companyImg")
     val photoUrl: Any?
 ) {
     companion object {
-        fun getMock(): Company {
+        fun getMock(): LetterBoxItem {
+            val talks: MutableList<Talk> = mutableListOf()
             val photoUrl = "https://images.unsplash.com/photo-1688380692117-63178554d76d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
             val exitDate = randomLocalDate()
             val name = String.randomText(10)
             val recentLetterContents = String.randomText(200)
-            return Company(
-                name = name,
-                uid = String.randomText(40),
-                exitDate = exitDate,
-                recentLetterContents = recentLetterContents,
-                photoUrl = photoUrl
-            )
-        }
-    }
-}
-
-data class LetterBoxItem(
-    val company: Company,
-    val talks: List<Talk>
-) {
-    companion object {
-        fun getMock(): LetterBoxItem {
-            val company = Company.getMock()
-            val talks: MutableList<Talk> = mutableListOf()
 
             repeat(10) {
                 talks.add(
@@ -107,25 +98,13 @@ data class LetterBoxItem(
             }
 
             return LetterBoxItem(
-                company, talks
+                talks = talks,
+                name = name,
+                uid = String.randomText(40),
+                exitDate = exitDate,
+                recentLetterContents = recentLetterContents,
+                photoUrl = photoUrl
             )
-        }
-    }
-}
-
-data class LetterBox(
-    val letterBoxItems: List<LetterBoxItem>
-) {
-    companion object {
-        fun getMock(): LetterBox {
-            val result: MutableList<LetterBoxItem> = mutableListOf()
-
-            repeat(10) {
-                result.add(
-                    LetterBoxItem.getMock()
-                )
-            }
-            return LetterBox(result)
         }
     }
 }

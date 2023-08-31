@@ -262,7 +262,7 @@ fun MyPageScreen(
 
 
                 HorizontalPager(
-                    count = 10,
+                    count = state.letterBoxItems.size,
                     itemSpacing = 20.dp,
                     state = pagerState,
                     contentPadding = PaddingValues(start = 40.dp, end = 40.dp),
@@ -363,7 +363,7 @@ fun MyPageScreen(
                                             .size(100.dp)
                                     ) {
 
-                                        state.letterBoxItems.getOrNull(page)?.company?.photoUrl.let { photoUrl ->
+                                        state.letterBoxItems.getOrNull(page)?.photoUrl.let { photoUrl ->
 
                                             AsyncImage(
                                                 model = photoUrl,
@@ -410,7 +410,7 @@ fun MyPageScreen(
 
                                     }
 
-                                    state.letterBoxItems.getOrNull(page)?.company?.name?.let {
+                                    state.letterBoxItems.getOrNull(page)?.name?.let {
                                         Text(
                                             it, style = dotTypo.displaySmall.copy(
                                                 color = Color.White
@@ -418,7 +418,7 @@ fun MyPageScreen(
                                         )
                                     }
 
-                                    state.letterBoxItems.getOrNull(page)?.company?.exitDate?.let {
+                                    state.letterBoxItems.getOrNull(page)?.exitDate?.let {
                                         Text(
                                             "~ ${it.toFormattedDate("yy.MM.dd")}",
                                             style = dotTypo.headlineSmall.copy(
@@ -447,7 +447,7 @@ fun MyPageScreen(
                                     )
 
                                     Text(
-                                        state.letterBoxItems.getOrNull(page)?.company?.recentLetterContents
+                                        state.letterBoxItems.getOrNull(page)?.recentLetterContents
                                             ?: "아직 도착한 편지가 없어요 :(", style = dotTypo.labelSmall.copy(
                                             color = Color.White,
                                             fontWeight = FontWeight.ExtraLight
@@ -608,7 +608,7 @@ fun MyPageScreen(
                         ) {
 
                             currentPage?.let {
-                                state.letterBoxItems.getOrNull(it)?.company?.photoUrl?.let { photoUrl ->
+                                state.letterBoxItems.getOrNull(it)?.photoUrl?.let { photoUrl ->
                                     AsyncImage(
                                         model = photoUrl,
                                         contentDescription = null,
@@ -636,7 +636,7 @@ fun MyPageScreen(
                             ) {
 
                                 currentPage?.let {
-                                    state.letterBoxItems.getOrNull(it)?.company?.name?.let { name ->
+                                    state.letterBoxItems.getOrNull(it)?.name?.let { name ->
                                         Text(
                                             name,
                                             style = dotTypo.displaySmall.copy(
@@ -650,7 +650,7 @@ fun MyPageScreen(
                                 // ~ 22.08.03
 
                                 currentPage?.let {
-                                    state.letterBoxItems.getOrNull(it)?.company?.exitDate?.let { exitDate ->
+                                    state.letterBoxItems.getOrNull(it)?.exitDate?.let { exitDate ->
                                         Text(
                                             "~ ${exitDate.toFormattedDate("yy.MM.dd")}",
                                             style = dotTypo.headlineSmall.copy(
