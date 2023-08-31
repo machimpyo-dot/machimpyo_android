@@ -38,6 +38,7 @@ import com.machimpyo.dot.ui.screen.select.LetterTitle
 import com.machimpyo.dot.ui.theme.DotColor
 import com.machimpyo.dot.ui.topappbar.Back
 import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
+import com.machimpyo.dot.ui.topappbar.Send
 import com.machimpyo.dot.utils.extension.LetterColorList
 import kotlinx.coroutines.async
 
@@ -46,15 +47,17 @@ fun LetterCheckScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: LetterCheckViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel,
 ) {
     val state by viewModel.state.collectAsState()
+
+    val userState by authViewModel.userState.collectAsState()
 
     val snackbarHostState = remember {
         SnackbarHostState()
     }
 
     LaunchedEffect(viewModel) {
-//        if(userState.isDeeplink) viewModel.openDeepLink()
 
         viewModel.effect.collect {
             when (it) {
@@ -95,6 +98,18 @@ fun LetterCheckScreen(
                         }
                     )
                 },
+                actionButtons = {
+                    userState.userInfo?.let {
+                        if (state.letter.senderUid != it.uid
+                            && state.letter.relatedLetterUid == null) {
+                            Send(
+                                onClick = {
+                                    viewModel.goToReplyScreen()
+                                }
+                            )
+                        }
+                    }
+                }
             )
         },
         snackbarHost = {
