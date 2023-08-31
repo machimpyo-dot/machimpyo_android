@@ -37,6 +37,7 @@ import com.machimpyo.dot.ui.screen.content.detail.ContentDetailScreen
 import com.machimpyo.dot.ui.screen.content.detail.ContentDetailViewModel
 import com.machimpyo.dot.ui.screen.home.HomeViewModel
 import com.machimpyo.dot.ui.screen.letter.check.LetterCheckScreen
+import com.machimpyo.dot.ui.screen.letter.reply.LetterReplyScreen
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.login.LogInScreen
 import com.machimpyo.dot.ui.screen.login.LogInViewModel
@@ -270,6 +271,30 @@ fun AppNavHost(
             )
         ) {
             LetterWriteScreen(navController = navController)
+        }
+
+        /*
+        편지 답장 쓰는 화면
+        */
+        AnimatingComposable(
+            route = "$ROUTE_LETTER_REPLY/{letter_uid}/{color_id}/{pattern_id}",
+            arguments = listOf(
+                navArgument("letter_uid") {
+                    type = NavType.LongType
+                    nullable = false
+                },
+                navArgument("color_id") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("pattern_id") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
+        ) {
+            LetterReplyScreen(navController = navController)
         }
 
         /*
