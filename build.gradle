@@ -10,7 +10,7 @@ buildscript {
         okhttp_version="4.9.3"
         nav_version = "2.7.0-alpha01+"
         kakao_version = "2.15.0"
-        orbit_version = "6.0.0"
+        protobuf_version = "3.24.2"
     }
 
     repositories {

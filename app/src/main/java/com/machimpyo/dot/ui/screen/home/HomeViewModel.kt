@@ -16,6 +16,7 @@ import com.machimpyo.dot.utils.extension.toLocalDate
 import com.machimpyo.dot.utils.extension.toLong
 import com.machimpyo.dot.utils.getMockHomeContents
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,6 +24,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: MainRepository,
@@ -68,7 +71,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun initState(userInfo: UserInfo?) = viewModelScope.launch {
+    fun initState(userInfo: UserInfo?) = viewModelScope.launch(Dispatchers.IO) {
 
         userInfo?: return@launch
 
@@ -79,6 +82,9 @@ class HomeViewModel @Inject constructor(
         val company = userInfo.company
 
         val contents: List<HomeContent> = getMockHomeContents()
+        val abstractLettersResult = repository.getAbstractLetters()
+
+        val abstractLetters = abstractLettersResult.getOrNull() ?: emptyList()
 
         _state.update {
             it.copy(
@@ -87,7 +93,8 @@ class HomeViewModel @Inject constructor(
                 profileUrl = profileUrl,
                 nickname = nickname,
                 company = company,
-                contents = contents
+                contents = contents,
+                abstractLetters = abstractLetters
             )
         }
     }

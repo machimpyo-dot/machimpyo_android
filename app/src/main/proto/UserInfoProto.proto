@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option java_package = "com.machimpyo.dot"; //패키지명
+option java_multiple_files = true;
+
+message UserInfoProto { //사용할 프로퍼티들
+    google.protobuf.StringValue uid = 1;
+    google.protobuf.StringValue nickName = 2;
+    google.protobuf.StringValue profileImg = 3;
+    google.protobuf.StringValue company = 4;
+    google.protobuf.StringValue exitDate = 5;
+}

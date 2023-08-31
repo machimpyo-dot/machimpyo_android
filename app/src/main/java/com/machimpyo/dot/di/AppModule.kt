@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.user.UserApiClient
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.data.store.LetterDesignSharedPreferences
 import com.machimpyo.dot.data.store.TokenSharedPreferences
 import com.machimpyo.dot.network.adapter.LocalDateAdapter
@@ -30,14 +31,28 @@ import javax.inject.Singleton
 object AppModule {
 
     /*
+    데이터 스토어
+     */
+    @Provides
+    @Singleton
+    fun provideTokenDataStore(
+        @ApplicationContext context: Context
+    ): AuthDataStore {
+        return AuthDataStore(
+            context
+        )
+    }
+
+    /*
     Token을 헤더에 붙이기 위한 Interceptor
      */
     @Provides
     @Singleton
     fun provideFirebaseAuthInterceptor(
-        prefs: TokenSharedPreferences
+        prefs: TokenSharedPreferences,
+        dataStore: AuthDataStore
     ): FirebaseAuthInterceptor {
-        return FirebaseAuthInterceptor(prefs)
+        return FirebaseAuthInterceptor(prefs, dataStore)
     }
 
     /*
@@ -90,6 +105,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(
+        dataStore: AuthDataStore,
         prefs: TokenSharedPreferences
     ): FirebaseAuth {
 
@@ -97,15 +113,19 @@ object AppModule {
 
         val idTokenListener = FirebaseAuth.IdTokenListener {
             Log.e("TAG", "idToken 변경 감지!!!!")
-            if(it.currentUser == null) {
+            if (it.currentUser == null) {
+//                dataStore.updateIdToken(null)
                 prefs.putFirebaseIdToken(null)
                 return@IdTokenListener
             }
 
-            it.currentUser?.getIdToken(false)?.addOnSuccessListener { tokenResult->
+            it.currentUser?.getIdToken(false)?.addOnSuccessListener { tokenResult ->
+//                dataStore.updateIdToken(tokenResult?.token)
+//                Log.e("TAG", "idToken 데이터 스토어에 업데이트 했다!!!! ${tokenResult?.token}")
                 prefs.putFirebaseIdToken(tokenResult?.token)
                 return@addOnSuccessListener
             }
+
         }
 
         firebaseAuth.addIdTokenListener(idTokenListener)

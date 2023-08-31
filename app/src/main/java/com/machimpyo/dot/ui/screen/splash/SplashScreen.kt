@@ -11,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.machimpyo.dot.ui.screen.splash.SplashViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SplashScreen(
-    modifier: Modifier,
-    navController: NavController
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: SplashViewModel
 ) {
 
     Scaffold(

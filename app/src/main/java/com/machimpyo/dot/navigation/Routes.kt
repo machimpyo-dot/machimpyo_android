@@ -14,3 +14,4 @@ const val ROUTE_LOGIN = "login" //로그인 화면
 const val ROUTE_MY_PAGE = "my_page" //편지함 세부 목록 화면
 const val ROUTE_CONTENT_DETAIL="content_detail" //콘텐츠 세부 화면
 const val ROUTE_WEB_VIEW = "web_view"
+const val ROUTE_SPLASH = "splash"

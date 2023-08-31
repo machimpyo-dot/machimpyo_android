@@ -30,6 +30,7 @@ import com.machimpyo.dot.service.Link
 import com.machimpyo.dot.ui.auth.AuthViewModel
 import com.machimpyo.dot.ui.screen.HomeScreen
 import com.machimpyo.dot.ui.screen.ProfileSettingsScreen
+import com.machimpyo.dot.ui.screen.SplashScreen
 import com.machimpyo.dot.ui.screen.box.BoxScreen
 import com.machimpyo.dot.ui.screen.box.BoxViewModel
 import com.machimpyo.dot.ui.screen.content.detail.ContentDetailScreen
@@ -44,6 +45,7 @@ import com.machimpyo.dot.ui.screen.mypage.MyPageViewModel
 import com.machimpyo.dot.ui.screen.profilesettings.ProfileSettingsViewModel
 import com.machimpyo.dot.ui.screen.select.color.SelectLetterColorScreen
 import com.machimpyo.dot.ui.screen.select.pattern.SelectLetterDesignScreen
+import com.machimpyo.dot.ui.screen.splash.SplashViewModel
 import com.machimpyo.dot.ui.screen.web.WebViewScreen
 import com.machimpyo.dot.ui.screen.web.WebViewViewModel
 import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
@@ -118,6 +120,16 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+
+        /*
+        스플래시 화면
+         */
+        AnimatingComposable(
+            ROUTE_SPLASH
+        ) {
+            val viewModel: SplashViewModel = hiltViewModel()
+            SplashScreen(navController = navController, viewModel = viewModel)
+        }
 
         /*
         박스 화면
