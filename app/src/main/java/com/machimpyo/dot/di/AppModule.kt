@@ -52,7 +52,7 @@ object AppModule {
         prefs: TokenSharedPreferences,
         dataStore: AuthDataStore
     ): FirebaseAuthInterceptor {
-        return FirebaseAuthInterceptor(prefs, dataStore)
+        return FirebaseAuthInterceptor(prefs)
     }
 
     /*
