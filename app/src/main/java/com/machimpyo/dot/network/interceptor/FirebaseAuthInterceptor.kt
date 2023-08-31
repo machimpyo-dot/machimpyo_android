@@ -1,27 +1,43 @@
 package com.machimpyo.dot.network.interceptor
 
-import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
+import com.machimpyo.dot.data.store.AuthDataStore
 import com.machimpyo.dot.data.store.TokenSharedPreferences
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
 class FirebaseAuthInterceptor @Inject constructor(
-    private val prefs: TokenSharedPreferences
-)  : Interceptor {
+    private val prefs: TokenSharedPreferences,
+    private val dataStore: AuthDataStore
+) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
+
+
         val request = chain.request()
+
+//            val prefs = dataStore.getIdTokenFlow().first()
+
+//            val token = prefs[AuthDataStore.ID_TOKEN]
 
         val token = prefs.getFirebaseIdToken()
 
-        if (token != null) {
+        Log.e("TAG", "인터셉터 !!! $token")
+
+        return if (token != null) {
             val newRequest = request.newBuilder()
                 .addHeader("firebase_token", token)
                 .build()
-            return chain.proceed(newRequest)
+            chain.proceed(newRequest)
+        } else {
+            chain.proceed(request)
         }
 
-        return chain.proceed(request)
     }
+
+
 }

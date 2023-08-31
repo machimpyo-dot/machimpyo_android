@@ -30,6 +30,7 @@ class WebViewViewModel @Inject constructor(
                 url = url
             )
         }
+
     }
 
     data class State(

@@ -16,6 +16,11 @@
         android:name=".DotApplication"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="android.app.use_dark_mode"
+            android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

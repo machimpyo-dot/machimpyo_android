@@ -5,10 +5,10 @@ import com.google.gson.GsonBuilder
 import com.machimpyo.dot.data.model.ColorList
 import com.machimpyo.dot.data.model.ContentInfo
 import com.machimpyo.dot.data.model.Letter
-import com.machimpyo.dot.data.model.LetterBox
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
 import com.machimpyo.dot.data.model.request.ExitDateUpdate
+import com.machimpyo.dot.data.model.response.AbstractLetter
 import com.machimpyo.dot.network.service.MainService
 import com.machimpyo.dot.repository.MainRepository
 import com.machimpyo.dot.utils.getMockContentInfo
@@ -69,7 +69,18 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun getLetterBox(): Result<List<LetterBoxItem>> {
         return try {
-            Result.success(LetterBox.getMock().letterBoxItems)
+
+            val response = mainService.getLetterBox()
+
+            if(!response.isSuccessful) {
+                throw Exception("마이 페이지 데이터 불러오기 실패")
+            }
+
+            val letterBoxItems = response.body() ?: throw Exception("마이 페이지 데이터 불러오기 실패")
+
+//            val letterBoxItems = letterBox.letterBoxItems
+
+            Result.success(letterBoxItems)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)
@@ -78,15 +89,39 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun getLetterNames(): Result<List<LetterName>> {
         return try {
-            val letterNames: MutableList<LetterName> = mutableListOf()
 
-            repeat(10) {
-                letterNames.add(
-                    LetterName.getMock()
-                )
+            val response = mainService.getLetterNames()
+
+            if(!response.isSuccessful) {
+                throw Exception("박스 아이템 리스트 가져오기 실패")
             }
 
+            val letterNames = response.body() ?: throw Exception("박스 아이템 리스트 가져오기 실패")
+
+//            val letterNames: MutableList<LetterName> = mutableListOf()
+
+//            repeat(10) {
+//                letterNames.add(
+//                    LetterName.getMock()
+//                )
+//            }
+
             Result.success(letterNames)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getAbstractLetters(): Result<List<AbstractLetter>> {
+        return try {
+            val response = mainService.getAbstractLetters()
+            if(!response.isSuccessful) {
+                throw Exception("받은 대표 편지들 가져오기 실패")
+            }
+
+            val abstractLetters = response.body() ?: throw Exception("받은 대표 편지들 가져오기 실패")
+            Result.success(abstractLetters)
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)

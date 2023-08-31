@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -47,14 +48,17 @@ class MainActivity : ComponentActivity() {
     private val REQUEST_CODE_UPDATE = 1001
 
     private lateinit var appUpdateManager: AppUpdateManager
-    private lateinit var appUpdateListener : OnSuccessListener<AppUpdateInfo>
+    private lateinit var appUpdateListener: OnSuccessListener<AppUpdateInfo>
 
     private fun initAppUpdateSettings() {
         appUpdateManager = AppUpdateManagerFactory.create(this)
-        appUpdateListener = OnSuccessListener<AppUpdateInfo> { appUpdateInfo->
+        appUpdateListener = OnSuccessListener<AppUpdateInfo> { appUpdateInfo ->
             try {
                 with(appUpdateInfo) {
-                    if(updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    if (updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && isUpdateTypeAllowed(
+                            AppUpdateType.IMMEDIATE
+                        )
+                    ) {
                         requestAppUpdate(appUpdateInfo)
                     }
                 }
@@ -65,6 +69,7 @@ class MainActivity : ComponentActivity() {
         }
         appUpdateManager.appUpdateInfo.addOnSuccessListener(appUpdateListener)
     }
+
     private fun requestAppUpdate(appUpdateInfo: AppUpdateInfo) {
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
@@ -80,7 +85,7 @@ class MainActivity : ComponentActivity() {
             .setMessage("업데이트 후 사용할 수 있습니다.")
             .setPositiveButton("업데이트") { dialog, which ->
                 // 다이얼로그 확인 버튼 클릭 시 처리
-                appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo->
+                appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
                     appUpdateInfo?.let {
                         requestAppUpdate(it)
                     }
@@ -95,7 +100,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         initAppUpdateSettings()
-        setupThemeMode()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContent {
 
             val navHostController = rememberAnimatedNavController()
@@ -125,32 +130,24 @@ class MainActivity : ComponentActivity() {
             }
 
             MachimpyoTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
 
-                    AppNavHost(
-                        navController = navHostController,
-                        startDestination =
-                            if(userState.user == null) ROUTE_LOGIN
-    //                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
-    //                        //이때 uid로 동일 사용자인지 구분할 필요 있음
-    //                        //datastore 고려해보고 있음
+                AppNavHost(
+                    navController = navHostController,
+                    startDestination =
+                    if (userState.user == null) ROUTE_LOGIN
+                    //                        //아래쪽에서 이미 설정되어있는 유저면 홈화면으로 이동시켜주어야함
+                    //                        //이때 uid로 동일 사용자인지 구분할 필요 있음
+                    //                        //datastore 고려해보고 있음
 //                            else if (userState.isDeeplink && FirebaseDeepLinkService.latestOpenLink != null) {
 //                                FirebaseDeepLinkService.latestOpenLink!!.nav
 //                            }
 
-                            else if (userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
-                                ROUTE_HOME
-                            }
+                    else if (userState.userInfo?.nickName != null && userState.userInfo?.company != null) {
+                        ROUTE_HOME
+                    } else ROUTE_PROFILE_SETTINGS,
+                    authViewModel = authViewModel
+                )
 
-                            else ROUTE_PROFILE_SETTINGS
-                        ,
-                        authViewModel = authViewModel
-                    )
-                }
             }
         }
 
@@ -166,19 +163,17 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun setupThemeMode() {
-        ThemeHelper.applyTheme(ThemeHelper.ThemeMode.LIGHT)
-    }
 
-    @Deprecated("Deprecated in Java", ReplaceWith(
-        "super.onActivityResult(requestCode, resultCode, data)",
-        "androidx.activity.ComponentActivity"
-    )
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "super.onActivityResult(requestCode, resultCode, data)",
+            "androidx.activity.ComponentActivity"
+        )
     )
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_UPDATE) {
-            if(resultCode != RESULT_OK) {
+        if (requestCode == REQUEST_CODE_UPDATE) {
+            if (resultCode != RESULT_OK) {
                 showUpdateRequiredDialog()
             }
         }
