@@ -94,11 +94,12 @@ fun SaveBottomSheetItemFactory(letterList: List<Letter>) {
 fun SaveBottomSheetItem(letter: Letter) {
 
     val dotTypo = LocalDotTypo.current
+
     Column {
-        Text(text = letter.title,
+        Text(text = letter.title?:"",
             style = dotTypo.labelMedium,
             color = DotColor.grey6)
-        Text(text = letter.content,
+        Text(text = letter.content?:"",
             style = dotTypo.labelSmall,
             color = DotColor.grey4)
     }

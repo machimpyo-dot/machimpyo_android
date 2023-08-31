@@ -145,20 +145,24 @@ fun LetterCheckScreen(
                 ) {
                     Spacer(modifier= Modifier.height(50.dp))
 
-                    LetterTitle(
-                        title = state.letter.title,
-                        hint= "",
-                        readOnly = true,
-                    )
+                    state.letter.title?.let {
+                        LetterTitle(
+                            title = it,
+                            hint= "",
+                            readOnly = true,
+                        )
+                    }
 
                     Spacer(modifier= Modifier.height(20.dp))
 
-                    LetterContent(
-                        content = state.letter.content,
+                    state.letter.content?.let {
+                        LetterContent(
+                            content = it,
 //                        maxLine = state.letterConfig.contentMaxLine,
-                        hint = "",
-                        readOnly = true,
-                    )
+                            hint = "",
+                            readOnly = true,
+                        )
+                    }
 
                     Spacer(modifier= Modifier.height(20.dp))
                 }
@@ -208,20 +212,26 @@ fun Preview() {
                 ) {
                     Spacer(modifier = Modifier.height(50.dp))
 
-                    LetterTitle(
-                        title = letter.title,
-                        hint = "",
-                        readOnly = true,
-                    )
+                    letter.title?.let {
+                        LetterTitle(
+                            title = it,
+                            hint = "",
+                            readOnly = true,
+                        )
+                    }
+
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    LetterContent(
-                        content = letter.content,
+                    letter.content?.let {
+                        LetterContent(
+                            content = it,
 //                        maxLine = letterConfig.contentMaxLine,
-                        hint = "",
-                        readOnly = true,
-                    )
+                            hint = "",
+                            readOnly = true,
+                        )
+                    }
+
 
                     Spacer(modifier = Modifier.height(20.dp))
                 }

@@ -215,30 +215,39 @@ fun LetterWriteScreen(
                 ) {
                     Spacer(modifier = Modifier.height(50.dp))
 
-                    LetterTitle(
-                        title = state.letter.title,
-                        hint = "사장님께",
-                        onValueChange = viewModel::titleValueChange
-                    )
+                    state.letter.title?.let {
+                        LetterTitle(
+                            title = it,
+                            hint = "사장님께",
+                            onValueChange = viewModel::titleValueChange
+                        )
+                    }
+
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    LetterContent(
-                        content = state.letter.content,
+                    state.letter.content?.let {
+                        LetterContent(
+                            content = it,
 //                        maxLine = state.letterConfig.contentMaxLine,
-                        hint = "그동안 감사했습니다...",
-                        onValueChange = viewModel::contentValueChange
-                    )
+                            hint = "그동안 감사했습니다...",
+                            onValueChange = viewModel::contentValueChange
+                        )
+                    }
+
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    LetterTextRemain(
-                        now = state.letter.content.length,
-                        max = state.letterConfig.contentMaxLength,
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .align(Alignment.End)
-                    )
+                    state.letter.content?.let {
+                        LetterTextRemain(
+                            now = it.length,
+                            max = state.letterConfig.contentMaxLength,
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .align(Alignment.End)
+                        )
+                    }
+
                 }
 
             }
