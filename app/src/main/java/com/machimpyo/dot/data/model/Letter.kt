@@ -14,8 +14,9 @@ data class Letter(
     @SerializedName(value="colorcode")val colorcode: String?,
     @SerializedName(value="letter_uid") val uid: Long?,
     @SerializedName(value="related_letter_uid")val relatedLetterUid: Long?,
+    @SerializedName(value="sender_uid") val senderUid: String? = null,
     val profileUrl: String?,
-    val nickname: String,
+    val nickname: String?,
     var url: String?,
     ) {
     companion object {

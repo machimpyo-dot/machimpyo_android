@@ -227,7 +227,7 @@ fun AppNavHost(
             deepLinks= listOf(navDeepLink { uriPattern = "${Link(nav= ROUTE_LETTER_CHECK, uid = "{letter_uid}")}"}),
             arguments = listOf(
                 navArgument("letter_uid") {
-                    type = NavType.StringType
+                    type = NavType.LongType
                     nullable = false
                 }
             )
@@ -243,7 +243,10 @@ fun AppNavHost(
                     authViewModel = authViewModel
                 )
             } else {
-                LetterCheckScreen(navController = navController )
+                LetterCheckScreen(
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
 
             }
 
