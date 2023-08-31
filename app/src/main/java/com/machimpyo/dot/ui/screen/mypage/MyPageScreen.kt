@@ -717,103 +717,39 @@ fun MyPageScreen(
                         }
 
                         currentPage?.let {
-                            state.letterBoxItems.getOrNull(it)?.talks?.let { talks ->
-
-                                talks.forEach { talk ->
-                                    item {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .background(
-                                                    color = Color.White,
-                                                    shape = RoundedCornerShape(
-                                                        topStart = 0.dp,
-                                                        topEnd = 10.dp,
-                                                        bottomStart = 10.dp,
-                                                        bottomEnd = 10.dp
-                                                    )
-                                                )
-                                                .clickable {
-                                                    val letterUid = talk.myTalk.uid
-                                                    viewModel.goToLetterCheckScreen(letterUid!!)
-                                                }
-                                                .padding(horizontal = 16.dp, vertical = 24.dp),
-                                            verticalArrangement = Arrangement.Center,
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.Start
-                                            ) {
-
-                                                AsyncImage(
-                                                    model = talk.myTalk.profileUrl,
-                                                    contentDescription = null,
-                                                    modifier = Modifier
-                                                        .size(40.dp)
-                                                        .clip(
-                                                            CircleShape
-                                                        ),
-                                                    error = painterResource(id = R.drawable.dot_icon),
-                                                    fallback = painterResource(id = R.drawable.dot_icon),
-                                                    placeholder = painterResource(id = R.drawable.dot_icon)
-                                                )
-
-                                                Spacer(modifier = Modifier.width(16.dp))
-
-                                                Text(
-                                                    talk.myTalk.title,
-                                                    style = dotTypo.headlineSmall.copy(
-                                                        DotColor.primaryColor,
-                                                        fontWeight = FontWeight.SemiBold
-                                                    ),
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                            }
-
-                                            ReadMoreText(
-                                                text = talk.myTalk.content,
-                                                expanded = false,
-                                                color = DotColor.grey5,
-                                                readMoreText = "더보기",
-                                                readMoreMaxLines = 2,
-                                                style = dotTypo.bodyMedium.copy(
-                                                    color = Color.Black,
-                                                    fontWeight = FontWeight.Medium
-                                                ),
-                                            )
-                                        }
-
-
-                                    }
-                                    item {
-                                        Spacer(modifier = Modifier.height(2.dp))
+                            if(state.letterBoxItems.getOrNull(it)?.talks.isNullOrEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth().height(300.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("아직 도착한 편지가 없어요 :(", style = dotTypo.bodyMedium.copy(
+                                            color = Color.White,
+                                            fontSize = 24.sp
+                                        ))
                                     }
 
-                                    items(talk.replyTalks) { replyTalk ->
+                                }
+                            }
+                            else {
+                                state.letterBoxItems.getOrNull(it)?.talks?.let { talks ->
 
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalArrangement = Arrangement.Center,
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
+                                    talks.forEach { talk ->
+                                        item {
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .background(
-                                                        color = DotColor.primaryColor,
+                                                        color = Color.White,
                                                         shape = RoundedCornerShape(
-                                                            topStart = 10.dp,
+                                                            topStart = 0.dp,
                                                             topEnd = 10.dp,
                                                             bottomStart = 10.dp,
-                                                            bottomEnd = 0.dp
+                                                            bottomEnd = 10.dp
                                                         )
                                                     )
                                                     .clickable {
-                                                        val letterUid = replyTalk.uid
+                                                        val letterUid = talk.myTalk.uid
                                                         viewModel.goToLetterCheckScreen(letterUid!!)
                                                     }
                                                     .padding(horizontal = 16.dp, vertical = 24.dp),
@@ -828,7 +764,7 @@ fun MyPageScreen(
                                                 ) {
 
                                                     AsyncImage(
-                                                        model = replyTalk.profileUrl,
+                                                        model = talk.myTalk.profileUrl,
                                                         contentDescription = null,
                                                         modifier = Modifier
                                                             .size(40.dp)
@@ -842,58 +778,138 @@ fun MyPageScreen(
 
                                                     Spacer(modifier = Modifier.width(16.dp))
 
-                                                    Text(
-                                                        replyTalk.title,
+                                                    talk.myTalk.title?.let { title ->
+                                                        Text(
+                                                            title,
                                                         style = dotTypo.headlineSmall.copy(
-                                                            Color.White,
+                                                            DotColor.primaryColor,
                                                             fontWeight = FontWeight.SemiBold
                                                         ),
                                                         maxLines = 1,
                                                         overflow = TextOverflow.Ellipsis
-                                                    )
+                                                        )
+                                                    }
+
                                                 }
 
-                                                ReadMoreText(
-                                                    text = replyTalk.content,
-                                                    expanded = false,
-                                                    color = Color.White,
-                                                    readMoreText = "더보기",
-                                                    readMoreMaxLines = 2,
-                                                    style = dotTypo.bodyMedium.copy(
-                                                        color = Color.White,
-                                                        fontWeight = FontWeight.Medium
-                                                    ),
-                                                    fontSize = 16.sp,
-                                                )
+                                                talk.myTalk.content?.let { content->
+                                                    ReadMoreText(
+                                                        text = content,
+                                                        expanded = false,
+                                                        color = DotColor.grey5,
+                                                        readMoreText = "더보기",
+                                                        readMoreMaxLines = 2,
+                                                        style = dotTypo.bodyMedium.copy(
+                                                            color = Color.Black,
+                                                            fontWeight = FontWeight.Medium
+                                                        ),
+                                                    )
 
+                                                }
 
                                             }
 
+
+                                        }
+                                        item {
                                             Spacer(modifier = Modifier.height(2.dp))
                                         }
 
-                                    }
+                                        if(talk.replyTalks.isNotEmpty()) {
+                                            items(talk.replyTalks) { replyTalk ->
 
-                                    item {
-                                        Spacer(modifier = Modifier.height(32.dp))
-                                    }
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    verticalArrangement = Arrangement.Center,
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Column(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .background(
+                                                                color = DotColor.primaryColor,
+                                                                shape = RoundedCornerShape(
+                                                                    topStart = 10.dp,
+                                                                    topEnd = 10.dp,
+                                                                    bottomStart = 10.dp,
+                                                                    bottomEnd = 0.dp
+                                                                )
+                                                            )
+                                                            .clickable {
+                                                                val letterUid = replyTalk.uid
+                                                                viewModel.goToLetterCheckScreen(letterUid!!)
+                                                            }
+                                                            .padding(horizontal = 16.dp, vertical = 24.dp),
+                                                        verticalArrangement = Arrangement.Center,
+                                                        horizontalAlignment = Alignment.CenterHorizontally
+                                                    ) {
+
+                                                        Row(
+                                                            modifier = Modifier.fillMaxWidth(),
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            horizontalArrangement = Arrangement.Start
+                                                        ) {
+
+                                                            AsyncImage(
+                                                                model = replyTalk.profileUrl,
+                                                                contentDescription = null,
+                                                                modifier = Modifier
+                                                                    .size(40.dp)
+                                                                    .clip(
+                                                                        CircleShape
+                                                                    ),
+                                                                error = painterResource(id = R.drawable.dot_icon),
+                                                                fallback = painterResource(id = R.drawable.dot_icon),
+                                                                placeholder = painterResource(id = R.drawable.dot_icon)
+                                                            )
+
+                                                            Spacer(modifier = Modifier.width(16.dp))
+
+                                                            replyTalk.title?.let { title->
+                                                                Text(
+                                                                    title,
+                                                                    style = dotTypo.headlineSmall.copy(
+                                                                        Color.White,
+                                                                        fontWeight = FontWeight.SemiBold
+                                                                    ),
+                                                                    maxLines = 1,
+                                                                    overflow = TextOverflow.Ellipsis
+                                                                )
+                                                            }
+
+                                                        }
+
+                                                        replyTalk.content?.let { content->
+                                                            ReadMoreText(
+                                                                text = content,
+                                                                expanded = false,
+                                                                color = Color.White,
+                                                                readMoreText = "더보기",
+                                                                readMoreMaxLines = 2,
+                                                                style = dotTypo.bodyMedium.copy(
+                                                                    color = Color.White,
+                                                                    fontWeight = FontWeight.Medium
+                                                                ),
+                                                                fontSize = 16.sp,
+                                                            )
+                                                        }
 
 
 
-                                }
+                                                    }
 
-                            }
+                                                    Spacer(modifier = Modifier.height(2.dp))
+                                                }
 
-                            if(state.letterBoxItems.getOrNull(it)?.talks.isNullOrEmpty()) {
-                                item {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth().height(300.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text("아직 도착한 편지가 없어요 :(", style = dotTypo.bodyMedium.copy(
-                                            color = Color.White,
-                                            fontSize = 24.sp
-                                        ))
+                                            }
+                                        }
+
+                                        item {
+                                            Spacer(modifier = Modifier.height(32.dp))
+                                        }
+
+
+
                                     }
 
                                 }

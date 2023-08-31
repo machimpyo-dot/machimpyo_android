@@ -7,15 +7,28 @@ import java.time.LocalDate
 
 
 //my_talk, related_talk 과 대응
+/*
+"myTalk":{
+    "talk_title":"제목입니다",
+    "talk_text":"내용입니다 테스트 from 민석",
+    "letter_uid":18,
+    "profile_img_url":null,
+    "nickname":"ㅇㅊ퐇"
+}
+나중에 데이터 매퍼로 이부분을 해결해야할 것 같음
+백에서 보내주는 키가 다른 경우, 근데 클래스를 같이 쓰는 경우
+ */
 data class Letter(
-    @SerializedName(value="title") val title: String,
-    @SerializedName(value="content") val content: String,
+    @SerializedName(value="title") val title: String?,
+    @SerializedName(value="content") val content: String?,
     @SerializedName(value="letter_design_uid") val letterDesignUid: Long?,
     @SerializedName(value="colorcode")val colorcode: String?,
     @SerializedName(value="letter_uid") val uid: Long?,
     @SerializedName(value="related_letter_uid")val relatedLetterUid: Long?,
     @SerializedName(value="sender_uid") val senderUid: String? = null,
+    @SerializedName("profile_img_url")
     val profileUrl: String?,
+    @SerializedName("nickname")
     val nickname: String?,
     var url: String?,
     ) {
@@ -47,7 +60,9 @@ data class LetterConfig(
 )
 
 data class Talk(
+    @SerializedName("myTalk")
     val myTalk: Letter,
+    @SerializedName("relatedTalk")
     val replyTalks: List<Letter>
 ) {
     companion object {
