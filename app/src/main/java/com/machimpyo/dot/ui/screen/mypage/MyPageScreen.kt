@@ -2,7 +2,6 @@ package com.machimpyo.dot.ui.screen.mypage
 
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -16,7 +15,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,12 +46,10 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -882,30 +878,45 @@ fun MyPageScreen(
                                         Spacer(modifier = Modifier.height(32.dp))
                                     }
 
-                                    item {
-                                        TextButton(
-                                            onClick = {
-                                                viewModel.goToThirdPartyLibraryCheckScreen()
-                                            },
-                                            modifier = Modifier.align(Alignment.CenterEnd)
-                                        ) {
-                                            Text("관련 라이브러리", style = dotTypo.bodyMedium.copy(
-                                                color = Color.White,
-                                                textAlign = TextAlign.End
-                                            ))
-                                        }
-                                    }
 
-                                    item {
-                                        Spacer(modifier = Modifier.height(32.dp))
-                                    }
 
                                 }
 
                             }
+
+                            if(state.letterBoxItems.getOrNull(it)?.talks.isNullOrEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth().height(300.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("아직 도착한 편지가 없어요 :(", style = dotTypo.bodyMedium.copy(
+                                            color = Color.White,
+                                            fontSize = 24.sp
+                                        ))
+                                    }
+
+                                }
+                            }
                         }
 
+                        item {
+                            TextButton(
+                                onClick = {
+                                    viewModel.goToThirdPartyLibraryScreen()
+                                },
+                                modifier = Modifier.align(Alignment.CenterEnd)
+                            ) {
+                                Text("관련 라이브러리", style = dotTypo.bodyMedium.copy(
+                                    color = Color.White,
+                                    textAlign = TextAlign.End
+                                ))
+                            }
+                        }
 
+                        item {
+                            Spacer(modifier = Modifier.height(32.dp))
+                        }
                     }
 
 

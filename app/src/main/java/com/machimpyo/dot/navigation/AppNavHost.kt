@@ -39,6 +39,8 @@ import com.machimpyo.dot.ui.screen.home.HomeViewModel
 import com.machimpyo.dot.ui.screen.letter.check.LetterCheckScreen
 import com.machimpyo.dot.ui.screen.letter.reply.LetterReplyScreen
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
+import com.machimpyo.dot.ui.screen.library.ThirdPartyLibraryScreen
+import com.machimpyo.dot.ui.screen.library.ThirdPartyLibraryViewModel
 import com.machimpyo.dot.ui.screen.login.LogInScreen
 import com.machimpyo.dot.ui.screen.login.LogInViewModel
 import com.machimpyo.dot.ui.screen.mypage.MyPageScreen
@@ -130,6 +132,16 @@ fun AppNavHost(
         ) {
             val viewModel: SplashViewModel = hiltViewModel()
             SplashScreen(navController = navController, viewModel = viewModel)
+        }
+
+        /*
+        서드파티 라이브러리 화면
+         */
+        AnimatingComposable(
+            ROUTE_THIRD_PARTY_LIBRARY
+        ) {
+            val viewModel: ThirdPartyLibraryViewModel = hiltViewModel()
+            ThirdPartyLibraryScreen(viewModel = viewModel, navController = navController)
         }
 
         /*
