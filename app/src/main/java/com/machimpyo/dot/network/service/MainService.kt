@@ -1,5 +1,6 @@
 package com.machimpyo.dot.network.service
 
+import com.machimpyo.dot.data.model.SendResult
 import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.data.model.LetterBoxItem
 import com.machimpyo.dot.data.model.LetterName
@@ -46,15 +47,15 @@ interface MainService {
 
     @GET("main/upper")
     suspend fun getAbstractLetters()
-    : Response<List<AbstractLetter>>
+            : Response<List<AbstractLetter>>
 
     @GET("company/send_persons")
     suspend fun getLetterNames()
-    : Response<List<LetterName>>
+            : Response<List<LetterName>>
 
     @GET("letter/open_talk")
     suspend fun getLetterBox()
-    : Response<List<LetterBoxItem>>
+            : Response<List<LetterBoxItem>>
 
     @GET("letter/design")
     suspend fun getLetterDesign(
@@ -63,11 +64,21 @@ interface MainService {
     @POST("letter/store")
     suspend fun createLetter(
         @Body letter: Letter,
-    ): Response<Map<String, Long>>
+    ): Response<SendResult>
 
     @GET("letter/get_one")
     suspend fun getLetter(
         @Query("letter_uid") letterUid: Long,
     ): Response<Letter>
+
+    @GET("temp_letter/temp_letter_list")
+    suspend fun getTempLetterList(
+    ): Response<List<Letter>>
+
+    @PUT("temp_letter/store")
+    suspend fun updateTempLetter(
+        @Body letter: Letter,
+    ): Response<SendResult>
+
 
 }

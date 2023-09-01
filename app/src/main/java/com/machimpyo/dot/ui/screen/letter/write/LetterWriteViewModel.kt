@@ -29,6 +29,7 @@ import com.machimpyo.dot.utils.extension.DOMAIN_URI_PREFIX
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SelectLetterWriteState(
@@ -88,7 +89,9 @@ class LetterWriteViewModel @Inject constructor(
     }
 
     fun save() {
-//        TODO("Not yet implemented")
+        viewModelScope.launch{
+            async { repository.updateTempLetter(letter = _state.value.letter)}.await()
+        }
     }
 
     private var _effect = MutableSharedFlow<Effect>()
@@ -113,6 +116,7 @@ class LetterWriteViewModel @Inject constructor(
     fun titleValueChange(title: String) {
 //        _state.value.letter.title = title
         _state.value = _state.value.copy(
+
             letter= _state.value.letter.copy(
                 title= title,
             )
@@ -155,6 +159,14 @@ class LetterWriteViewModel @Inject constructor(
 
     fun getSelectedColor(): Color {
         return Color(android.graphics.Color.parseColor("#${_state.value.selectedColor}"))
+    }
+
+    fun changeLetter(letter: Letter) {
+        _state.value = _state.value.copy(
+            letter = letter,
+            selectedColor = letter.colorcode!!,
+            selectedPattern = letter.letterDesignUid!!.toInt(),
+        )
     }
 
 

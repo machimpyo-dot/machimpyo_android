@@ -1,6 +1,7 @@
 package com.machimpyo.dot.repository.impl
 
 import android.util.Log
+import com.airbnb.lottie.L
 import com.google.gson.GsonBuilder
 import com.machimpyo.dot.data.model.ColorList
 import com.machimpyo.dot.data.model.ContentInfo
@@ -155,7 +156,13 @@ class MainRepositoryImpl @Inject constructor(
     override suspend fun createLetter(letter: Letter): Result<Long> {
         return try {
             val response = mainService.createLetter(letter)
-            Result.success(response.body()!!.getValue("letter_uid"))
+
+            if (response.body()!!.letterUid != null) {
+                Result.success(response.body()!!.letterUid!!)
+            }
+            else
+                throw Exception(response.body()!!.error.toString())
+
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)
@@ -165,6 +172,37 @@ class MainRepositoryImpl @Inject constructor(
     override suspend fun getLetter(uid: Long): Result<Letter> {
         return try {
             Result.success(mainService.getLetter(uid).body()!!)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+
+    override suspend fun getTempLetterList(): Result<List<Letter>> {
+        return try {
+            val response = mainService.getTempLetterList()
+
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateTempLetter(letter: Letter): Result<Long> {
+        return try {
+            val response = mainService.updateTempLetter(letter)
+                if (response.body()!!.letterUid != null) {
+                    Result.success(response.body()!!.letterUid!!)
+                }
+                else
+                    throw Exception(response.body()!!.error.toString())
+
         } catch (e: Exception) {
             e.printStackTrace()
             Result.failure(e)

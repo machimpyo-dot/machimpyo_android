@@ -85,4 +85,18 @@ val Typography = Typography(
         letterSpacing = (-1.2).sp
     ),
 
+    labelMedium = TextStyle(
+        fontFamily = pretendard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        letterSpacing = (-1.2).sp
+    ),
+
+    labelLarge = TextStyle(
+        fontFamily = pretendard,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 21.sp,
+        letterSpacing = (-1.2).sp
+    ),
+
 )

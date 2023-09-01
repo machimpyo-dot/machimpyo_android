@@ -1,5 +1,6 @@
 package com.machimpyo.dot.ui.screen.letter.write
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
@@ -77,7 +78,8 @@ fun LetterWriteScreen(
     modifier: Modifier = Modifier
         .background(Color.Black),
     navController: NavController,
-    viewModel: LetterWriteViewModel = hiltViewModel()
+    viewModel: LetterWriteViewModel = hiltViewModel(),
+    saveBottomSheetViewModel: SaveBottomSheetViewModel = hiltViewModel()
 ) {
 
     //뒤로가기 버튼 금지 처리
@@ -98,7 +100,11 @@ fun LetterWriteScreen(
 
     if (showBottomSheet) {
         SaveBottomSheet(
-            onDismiss = {showBottomSheet = false}
+            onDismiss = {showBottomSheet = false},
+            onClickCallBack= {letter -> viewModel.changeLetter(letter)
+
+                             Log.i("TAG",letter.toString())},
+            viewModel = saveBottomSheetViewModel,
         )
     }
 
@@ -120,7 +126,7 @@ fun LetterWriteScreen(
             send = false
             viewModel.goToHomeScreen()
         },
-        url= state.letter.url!!
+        url= state.letter.url
     )
 
     LaunchedEffect(viewModel) {
@@ -147,7 +153,6 @@ fun LetterWriteScreen(
                         }
                     }
                 }
-
             }
         }
     }
@@ -323,7 +328,7 @@ fun BackPopup(
 @Composable
 fun SendPopup(
     visible: Boolean,
-    url: String,
+    url: String?,
     checkOnClick: () -> Unit = {},
 ) {
     val dotTypo = LocalDotTypo.current
@@ -378,7 +383,7 @@ fun SendPopup(
 
                     Text(
                         modifier= Modifier.fillMaxWidth(0.8f),
-                        text = url,
+                        text = url ?: "",
                         style = dotTypo.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             lineHeightStyle = LineHeightStyle(
@@ -397,7 +402,7 @@ fun SendPopup(
                             onClick = {
                                 //생성된 url 복사
                                 clipboardManager.setText(
-                                    AnnotatedString(url)
+                                    AnnotatedString(url ?: "")
                                 )
                             },
                             modifier= Modifier.size(15.dp)

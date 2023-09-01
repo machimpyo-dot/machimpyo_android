@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
             val userState by authViewModel.userState.collectAsState()
 
             LaunchedEffect(Unit) {
-                authViewModel.logOut()
+//                authViewModel.logOut()
 
 //                async {
 //                    FirebaseDeepLinkService.readDynamicLink(

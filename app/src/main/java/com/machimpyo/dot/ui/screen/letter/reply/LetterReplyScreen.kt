@@ -59,6 +59,7 @@ import androidx.navigation.NavController
 import com.machimpyo.dot.R
 import com.machimpyo.dot.ui.popup.MainDialog
 import com.machimpyo.dot.ui.popup.SelectButton
+import com.machimpyo.dot.ui.screen.letter.check.ReplyButton
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteViewModel
 import com.machimpyo.dot.ui.screen.letter.write.SaveBottomSheet
 import com.machimpyo.dot.ui.screen.select.Letter
@@ -114,6 +115,7 @@ fun LetterReplyScreen(
 
     SendPopup(
         visible = send,
+        sendResult = state.sendResult,
         checkOnClick = {
             send = false
             viewModel.goToHomeScreen()
@@ -164,6 +166,7 @@ fun LetterReplyScreen(
                 actionButtons = {
                     Send(
                         onClick = {
+                            send = true
                             //coroutine으로
                             viewModel.send()
                         }
@@ -298,13 +301,15 @@ fun BackPopup(
 @Composable
 fun SendPopup(
     visible: Boolean,
+    sendResult: Boolean,
     checkOnClick: () -> Unit = {},
 ) {
     AnimatedVisibility(visible= visible) {
 
         MainDialog(
             mainIcon = painterResource(id = R.drawable.heart),
-            mainText = "편지 완료"
+            //TODO 사실 두 경우만 있지 않을건데..
+            mainText = if(sendResult) "편지 완료" else "편지 전송 실패\n이미 답장한 편지입니다"
         ) {
             Column(
                 modifier = Modifier

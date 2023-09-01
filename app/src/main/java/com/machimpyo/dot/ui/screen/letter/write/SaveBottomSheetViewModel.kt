@@ -8,6 +8,7 @@ import com.machimpyo.dot.data.model.Letter
 import com.machimpyo.dot.navigation.ROUTE_LETTER_WRITE
 import com.machimpyo.dot.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,17 +18,10 @@ import javax.inject.Inject
 
 data class SaveState(
     val tempLetterList: List<Letter>,
-    val tempLetterNum: Int,
-    val isEmpty:Boolean,
+    val tempLetterNum: Int = 0,
+    val isEmpty:Boolean =  true,
 )
 
-val testList = listOf<Letter>(
-    Letter.getMock(),
-    Letter.getMock(),
-    Letter.getMock(),
-    Letter.getMock(),
-    Letter.getMock(),
-)
 @HiltViewModel
 class SaveBottomSheetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -44,9 +38,13 @@ class SaveBottomSheetViewModel @Inject constructor(
         )
     }
 
-    private suspend fun getTempLetters(): List<Letter> {
+    private suspend fun getTempLetters() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(
+                tempLetterList = async { repository.getTempLetterList().getOrDefault(listOf<Letter>()) }.await()
+            )
 
-        return testList
+        }
     }
 
     private val _state = MutableStateFlow(
@@ -61,12 +59,11 @@ class SaveBottomSheetViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val tempLetters = getTempLetters()
+            getTempLetters()
 
             _state.value = _state.value.copy(
-                tempLetterList = tempLetters,
-                tempLetterNum = tempLetters.size,
-                isEmpty = tempLetters.isEmpty()
+                tempLetterNum = _state.value.tempLetterList.size,
+                isEmpty = _state.value.tempLetterList.isEmpty()
             )
         }
     }

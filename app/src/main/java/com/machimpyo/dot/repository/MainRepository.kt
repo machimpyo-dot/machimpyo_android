@@ -41,13 +41,13 @@ interface MainRepository {
     나경 부분 아래로 쓰고
      */
 
-//    suspend fun updateTempLetter(letter: Letter)
-//
     suspend fun createLetter(letter: Letter): Result<Long>
 
     suspend fun getLetterDesign(): Result<ColorList>
 
     suspend fun getLetter(uid: Long): Result<Letter>
 
+    suspend fun getTempLetterList(): Result<List<Letter>>
 
+    suspend fun updateTempLetter(letter: Letter): Result<Long>
 }

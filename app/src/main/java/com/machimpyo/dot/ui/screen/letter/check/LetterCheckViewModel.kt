@@ -32,6 +32,7 @@ data class LetterCheckState(
     val selectedPattern: Int,
     var letter: Letter,
     val letterConfig: LetterConfig,
+    val canReply: Boolean,
 )
 @HiltViewModel
 class LetterCheckViewModel @Inject constructor(
@@ -41,6 +42,14 @@ class LetterCheckViewModel @Inject constructor(
     ) : ViewModel() {
 
     private var colorList: ColorList? = null
+
+    fun updateCanReply(loginUserUid: String) {
+        if(!_state.value.letter.senderUid.equals(loginUserUid)) _state.value.copy(canReply = false)
+        else if(_state.value.letter.relatedLetterUid != null ) _state.value.copy(canReply = false)
+        else _state.value.copy(canReply = true)
+
+    }
+
     private suspend fun getLetter(uid: Long) {
         _state.value = _state.value.copy(
             letter = repository.getLetter(uid).getOrThrow()
@@ -94,7 +103,8 @@ class LetterCheckViewModel @Inject constructor(
                 colorcode = null,
                 relatedLetterUid = null,
             ),
-            letterConfig = LetterConfig()
+            letterConfig = LetterConfig(),
+            canReply = false,
             )
     )
 
@@ -117,6 +127,7 @@ class LetterCheckViewModel @Inject constructor(
                         uid = letterUid
                     )
                 )
+
             }
 
         }

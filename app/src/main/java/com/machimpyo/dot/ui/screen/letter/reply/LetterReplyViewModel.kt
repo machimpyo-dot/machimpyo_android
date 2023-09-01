@@ -37,6 +37,7 @@ data class SelectLetterReplyState(
     val selectedPattern: Int,
     var letter: Letter,
     val letterConfig: LetterConfig,
+    val sendResult: Boolean,
 )
 @HiltViewModel
 class LetterReplyViewModel @Inject constructor(
@@ -46,13 +47,24 @@ class LetterReplyViewModel @Inject constructor(
 ) : ViewModel() {
     fun send() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(
-                letter= _state.value.letter.copy(
-                    uid = async {repository.createLetter(_state.value.letter).getOrNull()}.await()
+            try {
+                _state.value = _state.value.copy(
+                    letter = _state.value.letter.copy(
+                        uid = async {
+                            repository.createLetter(_state.value.letter).getOrNull()
+                        }.await(),
+                    ),
+                    sendResult = true,
                 )
-            )
 
-            Log.i("TAG","${_state.value.letter}")
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    sendResult = false,
+                )
+                Log.e("REPLY", "${e}")
+            }finally {
+                Log.i("TAG", "${_state.value.letter}")
+            }
         }
 
     }
@@ -94,7 +106,8 @@ class LetterReplyViewModel @Inject constructor(
                 colorcode = null,
                 relatedLetterUid = null,
             ),
-            letterConfig = LetterConfig()
+            letterConfig = LetterConfig(),
+            sendResult = false
         )
     )
 

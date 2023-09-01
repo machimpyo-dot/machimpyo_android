@@ -1,7 +1,11 @@
 package com.machimpyo.dot.ui.screen.letter.write
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.machimpyo.dot.data.model.Letter
@@ -24,6 +29,7 @@ import com.machimpyo.dot.ui.theme.LocalDotTypo
 fun SaveBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    onClickCallBack: (Letter) -> Unit = {},
     viewModel: SaveBottomSheetViewModel = hiltViewModel(),
 ) {
 //    val scope = rememberCoroutineScope()
@@ -34,12 +40,17 @@ fun SaveBottomSheet(
     val state by viewModel.state.collectAsState()
 
     ModalBottomSheet(
+        modifier= modifier,
         onDismissRequest = { onDismiss() },
         containerColor = Color.White,
         dragHandle = {BottomSheetDefaults.DragHandle()}
     ) {
         SaveBottomSheetTop(saveNum = state.tempLetterNum)
-        SaveBottomSheetItemFactory(state.tempLetterList)
+        SaveBottomSheetItemFactory(state.tempLetterList) {
+                letter -> onClickCallBack(letter)
+                onDismiss()
+        }
+        Spacer(modifier = Modifier.height(50.dp))
     }
 }
 @Composable
@@ -50,6 +61,7 @@ fun SaveBottomSheetTop(
 
     ConstraintLayout(
         modifier = Modifier
+            .padding(20.dp)
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
@@ -67,7 +79,7 @@ fun SaveBottomSheetTop(
         Text(text = ""+saveNum,
             style = dotTypo.labelSmall,
             modifier = Modifier.constrainAs(saveNumConstraint) {
-                start.linkTo(saveTextConstraint.start)
+                start.linkTo(saveTextConstraint.end, margin= 5.dp)
                 linkTo(parent.top,parent.bottom)
             }
         )
@@ -84,18 +96,26 @@ fun SaveBottomSheetTop(
 }
 
 @Composable
-fun SaveBottomSheetItemFactory(letterList: List<Letter>) {
+fun SaveBottomSheetItemFactory(letterList: List<Letter>, onClickCallBack: (Letter) -> Unit = {}) {
     for (letter in letterList) {
-        SaveBottomSheetItem(letter)
+        SaveBottomSheetItem(
+            letter= letter,
+            onClickCallBack = {letterItem -> onClickCallBack(letterItem)})
     }
 }
 
 @Composable
-fun SaveBottomSheetItem(letter: Letter) {
+fun SaveBottomSheetItem(letter: Letter,
+                        onClickCallBack: (Letter)->Unit) {
 
     val dotTypo = LocalDotTypo.current
 
-    Column {
+    Column(
+        modifier= Modifier
+            .clickable { onClickCallBack(letter) }
+            .fillMaxWidth()
+            .padding(20.dp)
+    ) {
         Text(text = letter.title?:"",
             style = dotTypo.labelMedium,
             color = DotColor.grey6)
