@@ -1,5 +1,7 @@
 package com.machimpyo.dot.ui.screen.letter.check
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,8 +27,10 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +55,7 @@ import com.machimpyo.dot.ui.topappbar.LogoCenteredTopAppBar
 import com.machimpyo.dot.ui.topappbar.Send
 import com.machimpyo.dot.utils.extension.LetterColorList
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 @Composable
 fun LetterCheckScreen(
@@ -69,13 +74,10 @@ fun LetterCheckScreen(
         SnackbarHostState()
     }
 
-    LaunchedEffect(viewModel) {
+    val canReply by remember { mutableStateOf(false) }
 
-        userState.userInfo?.let {
-            it.uid?.let { uid: String ->
-                viewModel.updateCanReply(uid)
-            }
-        }
+    LaunchedEffect(viewModel) {
+        viewModel.updateUserUid(userState.userInfo!!.uid!!)
 
         viewModel.effect.collect {
             when (it) {
@@ -177,25 +179,30 @@ fun LetterCheckScreen(
         }
 
 
-        ConstraintLayout(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp)
-        ) {
-            val replyButtonRef = createRef()
+        if (state.canReply) {
+            ConstraintLayout(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 20.dp)
+            ) {
+                val replyButtonRef = createRef()
 
-            ReplyButton(
-                modifier= Modifier.constrainAs(replyButtonRef){
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom, margin = 50.dp)
-                },
-                onClick= {
-                    viewModel.goToReplyScreen()
-                }
-            )
+
+                ReplyButton(
+                    modifier= Modifier.constrainAs(replyButtonRef){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom, margin = 50.dp)
+                    },
+                    onClick= {
+                        viewModel.goToReplyScreen()
+                    }
+                )
+
+            }
         }
+
     }
 }
 
@@ -207,7 +214,8 @@ fun ReplyButton(
     val dotTypo = LocalDotTypo.current
 
     Button(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .wrapContentHeight(),
         onClick = onClick,
         shape = RoundedCornerShape(5.dp),

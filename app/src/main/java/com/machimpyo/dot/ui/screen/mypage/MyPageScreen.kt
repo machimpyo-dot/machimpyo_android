@@ -163,7 +163,7 @@ fun MyPageScreen(
         currentPage = if (pagerState.pageCount > 0) {
             pagerState.currentPage
         } else {
-            null
+            0
         }
     }
 

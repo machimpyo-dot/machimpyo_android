@@ -37,6 +37,7 @@ import com.machimpyo.dot.ui.screen.content.detail.ContentDetailScreen
 import com.machimpyo.dot.ui.screen.content.detail.ContentDetailViewModel
 import com.machimpyo.dot.ui.screen.home.HomeViewModel
 import com.machimpyo.dot.ui.screen.letter.check.LetterCheckScreen
+import com.machimpyo.dot.ui.screen.letter.check.LetterCheckViewModel
 import com.machimpyo.dot.ui.screen.letter.reply.LetterReplyScreen
 import com.machimpyo.dot.ui.screen.letter.write.LetterWriteScreen
 import com.machimpyo.dot.ui.screen.library.ThirdPartyLibraryScreen
@@ -256,9 +257,13 @@ fun AppNavHost(
                     authViewModel = authViewModel
                 )
             } else {
+
+                val viewModel: LetterCheckViewModel = hiltViewModel()
+
                 LetterCheckScreen(
                     navController = navController,
-                    authViewModel = authViewModel
+                    authViewModel = authViewModel,
+                    viewModel = viewModel
                 )
 
             }

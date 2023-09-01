@@ -33,6 +33,7 @@ data class LetterCheckState(
     var letter: Letter,
     val letterConfig: LetterConfig,
     val canReply: Boolean,
+    val userUid: String,
 )
 @HiltViewModel
 class LetterCheckViewModel @Inject constructor(
@@ -43,11 +44,24 @@ class LetterCheckViewModel @Inject constructor(
 
     private var colorList: ColorList? = null
 
-    fun updateCanReply(loginUserUid: String) {
-        if(!_state.value.letter.senderUid.equals(loginUserUid)) _state.value.copy(canReply = false)
-        else if(_state.value.letter.relatedLetterUid != null ) _state.value.copy(canReply = false)
-        else _state.value.copy(canReply = true)
+    private fun updateCanReply(loginUserUid: String) {
 
+        Log.e("TAG", _state.value.letter.senderUid.toString())
+        if(_state.value.letter.relatedLetterUid != null ) {
+            _state.value = _state.value.copy(canReply = false)
+        }
+        if(_state.value.letter.senderUid == loginUserUid){
+            _state.value = _state.value.copy(canReply = false)
+        }
+
+        _state.value = _state.value.copy(canReply = true)
+
+    }
+
+    fun updateUserUid(uid: String) {
+        _state.value = _state.value.copy(
+            userUid = uid
+        )
     }
 
     private suspend fun getLetter(uid: Long) {
@@ -105,17 +119,20 @@ class LetterCheckViewModel @Inject constructor(
             ),
             letterConfig = LetterConfig(),
             canReply = false,
+            userUid = ""
             )
     )
 
     var state = _state.asStateFlow()
     init {
-        viewModelScope.launch {
+        viewModelScope.async {
             colorList= async { getLetterColorList()}.await()
 
             val letterUid: Long? = savedStateHandle.get<Long>("letter_uid")
             letterUid?.let {
+
                 async { getLetter(it)}.await()
+
                 _state.value = _state.value.copy(
                     //TODO DB에서 #을 처리하지 않으셔서 우선 임시방편임
                     selectedColor= "${_state.value.letter.colorcode}",
@@ -127,6 +144,8 @@ class LetterCheckViewModel @Inject constructor(
                         uid = letterUid
                     )
                 )
+
+                updateCanReply(_state.value.userUid)
 
             }
 
